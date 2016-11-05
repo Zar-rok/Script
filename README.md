@@ -2,6 +2,8 @@
 
 * Misc :
 	* fillScreen.sh : fill the terminal with 3 random chars.
+	* aCoeur.sh : break password !
+	* printErase.sh : print and erase a string.
 
 * Virus :
 	* rm_virus.sh : used to desinfect file infected by virus.sh.
