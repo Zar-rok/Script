@@ -1,6 +1,10 @@
 #!/bin/bash
 
-#while : ; do if [ $((end - start)) -gt 5 ]; then start=$(date +%s); fi; end=$(date +%s); printf "%d, %d\n" $start $end; done
+if [ $# -ne 1 ]
+then
+	echo "Usage : ./aCoeur.sh [String to display]"
+	exit 2
+fi
 
 arg="$1"
 totalSize=$(echo $arg | wc -c)
