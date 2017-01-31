@@ -1,11 +1,24 @@
 #!/bin/bash
 
+function end {
+	# Reset the default color
+	printf "\x1B[0m"
+	clear
+	# Little bit of delay else
+	# the following F11 doesn't execute
+	sleep 0.1
+	xdotool key F11
+	exit
+}
+
+xdotool key F11
+
 elements=("░" "▒" "▓")
 width=$(($(tput cols) + 1))
-height=$(($(tput lines) + 2))
+height=$(($(tput lines) + 1))
 
 clear
-trap 'printf "\x1B[0m"; clear; exit' 2
+trap 'end' SIGINT
 while :
 do
 	tput setaf $(($RANDOM%256))
