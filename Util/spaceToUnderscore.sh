@@ -9,10 +9,11 @@ fi
 
 dir=$(pwd)
 
-find "$1" -regextype sed -regex ".* .*" -type f -print0 |
+#find "$1" -regextype sed -regex ".* .*" -type f -print0 |
+find "$1" -regextype sed -regex ".* .*" | grep -E "\s" |
 while read -d $'\0' file
 do
 	name=$(echo "$file" | sed 's/ /_/g')
 	echo "${file##*/} ==> ${name##*/}"
-	mv "$dir/$file" "$dir/$name"
+	#mv "$dir/$file" "$dir/$name"
 done
