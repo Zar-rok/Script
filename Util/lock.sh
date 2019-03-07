@@ -10,6 +10,6 @@ then
 fi
 
 # Lock and display the screenshot
-i3lock -u -i /tmp/screen.sh
+i3lock -u -i /tmp/screen.png
 
 rm /tmp/screen.png

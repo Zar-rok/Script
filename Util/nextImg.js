@@ -1,0 +1,1 @@
+window.location.href=window.location.href.replace(/.*\/(.*)/g, function(pattern, n) {return Number(n) + 1;});

@@ -7,4 +7,4 @@ then
 fi
 
 printf "[*] Processed files :\n"
-find "$1" -name "$2" ! -type d -exec bash -c "expand -t $3 \"\$0\" > /tmp/tmp_file && mv /tmp/tmp_file \"\$0\" && printf \"    [-] \$0\n\"" {} \;
+find "$1" -name "$2" ! -type d -exec bash -c "expand -t "$3" \"\$0\" > /tmp/tmp_file && mv /tmp/tmp_file \"\$0\" && printf \"    [-] \$0\n\"" {} \;
