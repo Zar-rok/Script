@@ -6,7 +6,7 @@
 THEME_DIR="${HOME}/.local/share/xfce4/terminal/colorschemes"
 TERMINAL_CONFIG_FILE="${HOME}/.config/xfce4/terminal/terminalrc"
 
-THEME_DARK_FILE="base16-gruvbox-dark-hard.16.theme"
+THEME_DARK_FILE="base16-3024.theme"
 THEME_LIGHT_FILE="base16-gruvbox-light-hard.16.theme"
 CURRENT_THEME="${THEME_DIR}/${THEME_DARK_FILE}"
 
