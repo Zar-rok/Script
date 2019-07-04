@@ -15,13 +15,14 @@ PROX = {'http': os.environ.get('http_proxy'), 'https': os.environ.get('https_pro
 
 payload = {'username' : USRNM, 'password' : PSSWD, 'returnUrl' : '', 'proxies': PROX}
 
-notify = lambda msg: subprocess.call(['notify-send', 'Solde Izly', msg])
+def notify(msg, die=False):
+    subprocess.call(['notify-send', 'Solde Izly', msg])
+    sys.exit(2) if die else None
 
 try:
   r = requests.post(URL, headers=HDRS, data=payload)
 except requests.ConnectionError as e:
-  notify(str(e))
-  sys.exit(2)
+  notify(str(e), die=True)
 
 if r.status_code == requests.codes.ok:
   soup = BeautifulSoup(r.text, 'html.parser')
@@ -29,4 +30,4 @@ if r.status_code == requests.codes.ok:
   sold = sold[0].text.encode('utf-8')
   notify(sold)
 else:
-  notify('[!] Status code: {:d}'.format(r.status_code))
+  notify('[!] Status code: {:d}'.format(r.status_code), die=True)
