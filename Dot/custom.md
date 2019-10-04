@@ -1,5 +1,11 @@
 # Custom
 
+## Keyboard shortcuts
+
+- `Ctrl + Alt + L`: [lock.sh](https://github.com/Zar-rok/Script/blob/master/Util/lock.sh)
+- `Ctrl + Alt + N`: [move-to-next-monitor](https://github.com/jc00ke/move-to-next-monitor)
+- `Ctrl + Alt + T`: `xfce4-terminal --maximize --hide-menubar --hide-toolbar --hide-scrollbar`
+
 ## Appearance
 
   - GTK+: [Arc-Darker](https://github.com/horst3180/arc-theme)
