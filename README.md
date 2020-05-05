@@ -18,4 +18,5 @@
 	- `spaceToUnderscore.sh`: replace all space un filename by an underscore.
 	- `tabToSpace.sh`: replace all the tab caracters by spaces.
   - `nextImg.js`: used to fix website using broken image displayer.
-  - `izly_sold.py`: display the sold of an account. 
+  - `izly_sold.py`: display the sold of an account.
+  - `bookmarklets.md`: Useful bookmarklets.
