@@ -15,5 +15,5 @@ javascript:location.href="///sci-hub.tw/"+location.href;
 
 ### [Search](https://www.online-tech-tips.com/cool-websites/the-12-best-bookmarklets-every-browser-should-have/)
 ```javascript
-javascript:q=prompt(); q !== null ? location.href="https://duckduckgo.com/?q=site%3A"+window.location.hostname+' '+escape(q) : undefined;
+javascript:var [n,q]=prompt('', '-').split('-'); n !== "" ? location.href="https://duckduckgo.com/?q=site%3A" + window.location.hostname + window.location.pathname.split('/', 1 + Number(n)).join('/') + ' ' + escape(q) : undefined
 ```
