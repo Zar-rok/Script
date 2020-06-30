@@ -5,7 +5,7 @@
 - gimp
 - meld
 - neovim
-- pdf-presenter-console
+- pdf-presenter-console _or_ pympress
 - redshift
 - vlc
 - xcas
@@ -15,3 +15,6 @@
 - ripgrep
 - wine
 - pdfshuffler
+- fzf
+- exa
+- fex
