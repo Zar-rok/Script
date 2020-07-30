@@ -1,0 +1,29 @@
+xfce4-panel.background {
+  border-color: #2b2e37;
+  background-color: #2b2e37;
+}
+
+wnck-pager:selected {
+  background-color: #586875;
+}
+
+#clock-button, #pulseaudio-button, #sn-button {
+  border-bottom: 2px solid;
+  border-bottom-left-radius: 2px;
+  border-bottom-right-radius: 2px;
+}
+
+#clock-button {
+  font: 13px "Noto Sans ExtraBold";
+  border-bottom-color: #83a598;
+}
+
+#pulseaudio-button {
+  margin: 0 10px;
+  border-bottom-color: #d68d0e;
+}
+
+#sn-button {
+  margin-left: 10px;
+  border-bottom-color: #b8bb26;
+}

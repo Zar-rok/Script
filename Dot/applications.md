@@ -18,5 +18,4 @@
 - fzf
 - exa
 - fex
-- ncdu
 - fd

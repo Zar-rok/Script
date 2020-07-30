@@ -1,0 +1,113 @@
+# set modifier
+set $super Mod4
+set $alt Mod1
+
+# set font
+font pango: Hack 13
+
+# Use Mouse+$super to drag floating windows to their wanted position
+floating_modifier $super
+
+# start rofi
+bindsym $alt+space exec rofi -show drun
+bindsym $alt+t exec ~/.config/rofi/trad.sh
+bindsym $alt+f exec ~/.config/rofi/srch.sh
+
+# common apps keybinds
+bindsym $super+Return exec xfce4-terminal --hide-scrollbar
+bindsym Print exec xfce4-screenshooter
+bindsym $super+Shift+q exec xfce4-session-logout
+bindsym $super+l exec xfce4-screensaver-command -l
+
+exec --no-startup-id nitrogen --restore
+exec --no-startup-id compton --config ~/.config/.compton.conf &
+
+bindsym $super+w exec firefox;focus
+bindsym $super+f exec thunar;focus
+bindsym $super+e exec emacs;focus
+
+# move focused window to next container
+bindsym $alt+Left exec ~/.config/i3/move_next.sh -1
+bindsym $alt+Right exec ~/.config/i3/move_next.sh 1
+bindsym $alt+Down exec ~/.config/i3/move_last.sh
+
+# Sreen brightness controls
+bindsym XF86MonBrightnessUp exec xbacklight -inc 20
+bindsym XF86MonBrightnessDown exec xbacklight -dec 20
+
+# kill focused window
+bindsym $super+c kill
+bindsym $alt+F4 kill
+
+# change focus
+bindsym $super+Left focus left
+bindsym $super+Down focus down
+bindsym $super+Up focus up
+bindsym $super+Right focus right
+
+# move focused window
+bindsym $super+Shift+Left move left
+bindsym $super+Shift+Down move down
+bindsym $super+Shift+Up move up
+bindsym $super+Shift+Right move right
+
+# split in horizontal orientation
+bindsym $super+h split h
+
+# split in vertical orientation
+bindsym $super+v split v
+
+# enter fullscreen mode for the focused container
+bindsym $super+shift+f fullscreen toggle
+
+# change container layout split
+bindsym $super+less layout toggle split
+
+# toggle tiling / floating
+bindsym $super+space floating toggle
+
+# change focus between tiling / floating windows
+bindsym $super+Shift+space focus mode_toggle
+
+# switch to workspace
+bindsym $alt+Control+Right workspace next
+bindsym $alt+Control+Left workspace prev
+bindsym $super+1 workspace 1
+bindsym $super+2 workspace 2
+bindsym $super+3 workspace 3
+bindsym $super+4 workspace 4
+bindsym $super+5 workspace 5
+bindsym $super+6 workspace 6
+
+# move focused container to workspace
+bindsym $super+Shift+1 move container to workspace 1
+bindsym $super+Shift+2 move container to workspace 2
+bindsym $super+Shift+3 move container to workspace 3
+bindsym $super+Shift+4 move container to workspace 4
+bindsym $super+Shift+5 move container to workspace 5
+bindsym $super+Shift+6 move container to workspace 6
+
+# restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
+bindsym $super+Shift+r restart
+
+# resize window (you can also use the mouse for that)
+mode "resize" {
+        bindsym Right resize shrink width 5 px or 5 ppt
+        bindsym Up resize grow height 5 px or 5 ppt
+        bindsym Down resize shrink height 5 px or 5 ppt
+        bindsym Left resize grow width 5 px or 5 ppt
+        bindsym Return mode "default"
+        bindsym Escape mode "default"
+}
+bindsym $super+r mode "resize"
+
+# window rules, you can find the window class using xprop
+for_window [class=".*"] border pixel 2
+
+# colour of border, background, text, indicator, and child_border
+client.focused              #bf616a #2f343f #d8dee8 #268bd2 #eee8d5
+client.focused_inactive     #262626 #262626 #d8dee8 #2f343f #262626
+client.unfocused            #262626 #262626 #d8dee8 #2f343f #262626
+client.urgent               #262626 #262626 #d8dee8 #2f343f #262626
+client.placeholder          #262626 #262626 #d8dee8 #2f343f #262626
+client.background           #262626
