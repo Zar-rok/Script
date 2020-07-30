@@ -1,4 +1,4 @@
-set number
+set number relativenumber
 
 " tab = 2 space
 set expandtab
