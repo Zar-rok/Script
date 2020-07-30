@@ -12,7 +12,7 @@ The only non default item is [xfce4-windowck-plugin](https://github.com/cedl38/x
 
 The clock is display with the `%R` format.
 
-The style of the panel is defined in the [gtk.css](.configure/gtk-3.0/gtk.css) file.
+The style of the panel is defined in the [gtk.css](.config/gtk-3.0/gtk.css) file.
 
 4. Compton [config file](.config/.compton.conf) to have opacity support for xfce4-notifyd.
 
