@@ -14,7 +14,7 @@ The clock is display with the `%R` format.
 
 The style of the panel is defined in the [gtk.css](.config/gtk-3.0/gtk.css) file.
 
-4. Compton [config file](.config/.compton.conf) to have opacity support for xfce4-notifyd.
+4. Compton [config file](.config/.compton.conf) to have opacity support for xfce4-notifyd. Based on [Howto: Using Compton for tear-free compositing on XFCE or LXDE](https://ubuntuforums.org/showthread.php?t=2144468&p=12644745#post12644745).
 
 5. Rofi [config file](.config/rofi/config).
 
