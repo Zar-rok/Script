@@ -103,6 +103,7 @@ bindsym $super+r mode "resize"
 
 # window rules, you can find the window class using xprop
 for_window [class=".*"] border pixel 2
+for_window [title="File Upload"] floating enable, resize set 1346 748, move absolute position 10 10
 
 # colour of border, background, text, indicator, and child_border
 client.focused              #bf616a #2f343f #d8dee8 #268bd2 #eee8d5
