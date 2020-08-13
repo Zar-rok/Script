@@ -3,9 +3,10 @@
 * Dot:
 	- `alias.sh`: random alias.
 	- `custom.md`: information used to customise Xfce4.
-  - `applications.md`: list of usefull applications.
-  - `nanorc`: settings for nano.
-  - `init.vim`: settings for nvim.
+	- `applications.md`: list of usefull applications.
+	- `nanorc`: settings for nano.
+	- `init.vim`: settings for nvim.
+	- `xfce4-i3wm/`: tuto to install i3wm while using the xfce4 tools
 
 * Misc:
 	- `fillScreen.sh`: fill the terminal with 3 random chars and with color !
@@ -17,6 +18,6 @@
 	- `lock.sh`: lock the current session and display a pixelized screenshot.
 	- `spaceToUnderscore.sh`: replace all space un filename by an underscore.
 	- `tabToSpace.sh`: replace all the tab caracters by spaces.
-  - `nextImg.js`: used to fix website using broken image displayer.
-  - `izly_sold.py`: display the sold of an account.
-  - `bookmarklets.md`: Useful bookmarklets.
+	- `nextImg.js`: used to fix website using broken image displayer.
+	- `izly_sold.py`: display the sold of an account.
+	- `bookmarklets.md`: Useful bookmarklets.
