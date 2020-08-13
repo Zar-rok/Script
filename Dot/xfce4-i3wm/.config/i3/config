@@ -20,6 +20,7 @@ bindsym $super+Shift+q exec xfce4-session-logout
 bindsym $super+l exec xfce4-screensaver-command -l
 
 exec --no-startup-id nitrogen --restore
+exec --no-startup-id xfce4-panel --disable-wm-check
 exec --no-startup-id compton --config ~/.config/.compton.conf &
 
 bindsym $super+w exec firefox;focus
