@@ -19,8 +19,8 @@ bindsym Print exec xfce4-screenshooter
 bindsym $super+Shift+q exec xfce4-session-logout
 bindsym $super+l exec xfce4-screensaver-command -l
 
-exec --no-startup-id nitrogen --restore
 exec --no-startup-id xfce4-panel --disable-wm-check
+exec --no-startup-id nitrogen --restore
 exec --no-startup-id compton --config ~/.config/.compton.conf &
 
 bindsym $super+w exec firefox;focus
@@ -28,6 +28,7 @@ bindsym $super+f exec thunar;focus
 bindsym $super+e exec emacs;focus
 
 # move focused window to next container
+bindsym $alt+Control+Shift+Right exec ~/.config/i3/go_empty.sh
 bindsym $alt+Left exec ~/.config/i3/move_next.sh -1
 bindsym $alt+Right exec ~/.config/i3/move_next.sh 1
 bindsym $alt+Down exec ~/.config/i3/move_last.sh

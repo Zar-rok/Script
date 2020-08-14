@@ -22,15 +22,16 @@ The style of the panel is defined in the [gtk.css](.config/gtk-3.0/gtk.css) file
 
 # Custom i3wm bindings
 
-| Binding   | Command         |
-|-----------|-----------------|
-| Alt+Space | `rofi`            |
-| Alt+t     | [`xfce4-dict`](.config/rofi/trad.sh)      |
-| Alt+f     | [`catfish`](.config/rofi/srch.sh)         |
-| Super+w   | `firefox`         |
-| Super+f   | `thunar`          |
-| Super+e   | `emacs`           |
-| Alt+left  | [`move_next.sh -1`](.config/i3/move_next.sh) |
-| Alt+right | [`move_next.sh 1`](.config/i3/move_next.sh)  |
-| Alt+down  | [`move_last.sh`](.config/i3/move_last.sh)    |
+| Binding        | Command         |
+|----------------|-----------------|
+| Alt+Space      | `rofi`            |
+| Alt+t          | [`xfce4-dict`](.config/rofi/trad.sh)      |
+| Alt+f          | [`catfish`](.config/rofi/srch.sh)         |
+| Super+w        | `firefox`         |
+| Super+f        | `thunar`          |
+| Super+e        | `emacs`           |
+| Alt+Ctrl+Shift | [`go_empty.sh`](.config/i3/go_empty.sh)     |
+| Alt+left       | [`move_next.sh -1`](.config/i3/move_next.sh) |
+| Alt+right      | [`move_next.sh 1`](.config/i3/move_next.sh)  |
+| Alt+down       | [`move_last.sh`](.config/i3/move_last.sh)    |
 
