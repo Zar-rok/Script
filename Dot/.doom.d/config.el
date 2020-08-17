@@ -56,5 +56,10 @@
 (require 'py-autopep8)
 (add-hook 'elpy-mode-hook 'py-autopep8-enable-on-save)
 
-(add-hook 'python-mode-hook 'global-color-identifiers-mode)
-(add-hook 'python-mode-hook 'global-auto-highlight-symbol-mode)
+(require 'yasnippet)
+(setq yas-triggers-in-field t)
+
+(yas-reload-all)
+(add-hook 'python-mode-hook #'yas-minor-mode)
+(add-hook 'python-mode-hook 'color-identifiers-mode)
+(add-hook 'python-mode-hook 'auto-highlight-symbol-mode)

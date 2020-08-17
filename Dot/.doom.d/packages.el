@@ -5,12 +5,15 @@
 ;; on the command line, then restart Emacs for the changes to take effect -- or
 ;; use 'M-x doom/reload'.
 
-(package! color-identifiers-mode)
+;; Dev
+
+(package! yasnippet)
+(package! yasnippet-snippets)
 (package! auto-highlight-symbol)
+(package! color-identifiers-mode)
 
 ;; Python
 
 (package! ein)
 (package! elpy)
 (package! py-autopep8)
-(package! python-docstring)
