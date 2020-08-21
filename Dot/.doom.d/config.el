@@ -27,13 +27,24 @@
       doom-variable-pitch-font (font-spec :family "Hack" :size 16)
       doom-serif-font (font-spec :family "Hack" :size 16))
 
+(after! doom-modeline
+        (remove-hook 'doom-modeline-mode-hook #'size-indication-mode)
+        (setq doom-modeline-buffer-encoding nil))
+
+(setq which-key-idle-delay 0.5)
+
 ;; Org
 
 (setq org-directory "~/org/")
 
 ;; Key bindings
 
-(global-set-key (kbd "C-c C-v") 'clipboard-yank)
+(map! :leader
+      (:prefix "w"
+       :desc "Move to the top window" :n "<up>" #'evil-window-up
+       :desc "Move to the right window" :n "<right>" #'evil-window-right
+       :desc "Move to the bottom window" :n "<down>" #'evil-window-down
+       :desc "Move to the left window" :n "<left>" #'evil-window-left))
 
 ;; Evil
 
@@ -46,12 +57,18 @@
 ;; Python
 
 (use-package elpy
-  :ensure t
   :defer t
   :init
   (advice-add 'python-mode :before 'elpy-enable))
 
-(setq elpy-rpc-python-command "python3")
+(setq eldoc-idle-delay 2
+      company-idle-delay 0.5
+      elpy-rpc-backend "jedi"
+      elpy-rpc-python-command "python3")
+
+(setq python-shell-interpreter "jupyter"
+      python-shell-interpreter-args "console --simple-prompt"
+      python-shell-prompt-detect-failure-warning nil)
 
 (require 'py-autopep8)
 (add-hook 'elpy-mode-hook 'py-autopep8-enable-on-save)

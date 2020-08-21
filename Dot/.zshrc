@@ -106,7 +106,9 @@ source $ZSH/oh-my-zsh.sh
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
 export EDITOR="nvim"
-export PATH=~/.cargo/bin:~/.emacs.d/bin:/opt:~/.local/bin:$PATH
+export PATH="${PATH}:/home/zar/.cargo/bin"
+export PATH="${PATH}:/home/zar/.emacs.d/bin"
+export PATH="${PATH}:/opt/gnirehtet-rust-linux64"
 
 alias ls="exa"
 alias l="exa -lag"
@@ -114,6 +116,7 @@ alias fd="fdfind"
 alias sub="man  -P 'less -p ^HISTORY\ EXPANSION' bash"
 alias 2up="sudo apt update && sudo apt upgrade"
 alias open="xdg-open"
+alias zshrc="nvim ~/.zshrc"
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh

@@ -17,19 +17,18 @@ bindsym $alt+f exec ~/.config/rofi/srch.sh
 bindsym $super+Return exec xfce4-terminal --hide-scrollbar
 bindsym Print exec xfce4-screenshooter
 bindsym $super+Shift+q exec xfce4-session-logout
-bindsym $super+l exec xfce4-screensaver-command -l
+bindsym $Control+$alt+l exec xfce4-screensaver-command -l
 bindsym $super+t exec birdtray -t
 
 exec --no-startup-id xfce4-panel --disable-wm-check
 exec --no-startup-id nitrogen --restore
 exec --no-startup-id compton --config ~/.config/.compton.conf &
-exec --no-startup-id "sleep 10; birdtray"
+exec --no-startup-id "sleep 7; birdtray"
 
 bindsym $super+w exec firefox;focus
 bindsym $super+f exec thunar;focus
 bindsym $super+e exec emacs;focus
 
-# move focused window to next container
 bindsym $alt+Control+Shift+Right exec ~/.config/i3/go_empty.sh
 bindsym $alt+Left exec ~/.config/i3/move_next.sh -1
 bindsym $alt+Right exec ~/.config/i3/move_next.sh 1
@@ -55,12 +54,6 @@ bindsym $super+Shift+Down move down
 bindsym $super+Shift+Up move up
 bindsym $super+Shift+Right move right
 
-# split in horizontal orientation
-bindsym $super+h split h
-
-# split in vertical orientation
-bindsym $super+v split v
-
 # enter fullscreen mode for the focused container
 bindsym $super+shift+f fullscreen toggle
 
@@ -76,6 +69,7 @@ bindsym $super+Shift+space focus mode_toggle
 # switch to workspace
 bindsym $alt+Control+Right workspace next
 bindsym $alt+Control+Left workspace prev
+
 bindsym $super+1 workspace 1
 bindsym $super+2 workspace 2
 bindsym $super+3 workspace 3
@@ -104,6 +98,29 @@ mode "resize" {
         bindsym Escape mode "default"
 }
 bindsym $super+r mode "resize"
+
+mode "vim" {
+        bindsym $alt+Control+Shift+l exec ~/.config/i3/go_empty.sh
+        bindsym $alt+h exec ~/.config/i3/move_next.sh -1
+        bindsym $alt+l exec ~/.config/i3/move_next.sh 1
+        bindsym $alt+j exec ~/.config/i3/move_last.sh
+
+        bindsym $super+h focus left
+        bindsym $super+j focus down
+        bindsym $super+k focus up
+        bindsym $super+l focus right
+
+        bindsym $super+Shift+h move left
+        bindsym $super+Shift+j move down
+        bindsym $super+Shift+k move up
+        bindsym $super+Shift+l move right
+
+        bindsym $alt+Control+l workspace next
+        bindsym $alt+Control+h workspace prev
+
+        bindsym $super+Escape mode "default"
+}
+bindsym $super+v mode "vim"
 
 # window rules, you can find the window class using xprop
 for_window [class=".*"] border pixel 2
