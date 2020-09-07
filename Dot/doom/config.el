@@ -23,7 +23,10 @@
 (setq undo-limit 80000000
       evil-want-fine-undo t
       auto-save-default t
-      truncate-string-ellipsis "…")
+      +doom-dashboard-banner-file (expand-file-name "logo.svg" doom-private-dir)
+      +doom-dashboard-banner-padding '(0 . 7))
+
+(defun doom-dashboard-widget-footer () nil)
 
 (delete-selection-mode 1)
 (global-subword-mode 1)
@@ -80,95 +83,95 @@
 (evil-ex-define-cmd "q" 'kill-this-buffer)
 (evil-ex-define-cmd "quit" 'evil-quit)
 
+(defadvice evil-inner-word (around underscore-as-word activate)
+  (let ((table (copy-syntax-table (syntax-table))))
+    (modify-syntax-entry ?_ "w" table)
+    (with-syntax-table table
+      ad-do-it)))
+
 (after! evil (evil-escape-mode nil))
 
-;; Company
+;; Dev
+
+(use-package lsp-mode
+  :hook (prog-mode . lsp))
+
+(use-package lsp-ui)
+
+(setq lsp-ui-doc-enable nil)
 
 (use-package company
-  :diminish company-mode
-  :init
-  (global-company-mode)
-  :config
-  ;; set default `company-backends'
-  (setq company-backends
-        '((company-files          ; files & directory
-           company-keywords       ; keywords
-           company-capf)  ; completion-at-point-functions
-          (company-abbrev company-dabbrev))))
+  :config (setq company-idle-delay 0
+                company-minimum-prefix-length 1))
 
 (use-package company-statistics
     :init
     (company-statistics-mode))
 
-(use-package company-try-hard
-    :bind
-    (("C-<tab>" . company-try-hard)
-     :map company-active-map
-     ("C-<tab>" . company-try-hard)))
+(setq lsp-signature-auto-activate t lsp-signature-doc-lines 1)
 
-(use-package company-quickhelp
+(use-package dap-mode
+    :after lsp-mode
     :config
-    (company-quickhelp-mode))
+    (dap-mode t)
+    (dap-ui-mode t))
+
+(require 'yasnippet)
+(yas-reload-all)
 
 ;; Python
 
-(use-package elpy
-    :bind
-    (:map elpy-mode-map
-          ("C-M-n" . elpy-nav-forward-block)
-          ("C-M-p" . elpy-nav-backward-block))
-    :hook ((elpy-mode . flycheck-mode)
-           (elpy-mode . (lambda ()
-                          (set (make-local-variable 'company-backends)
-                               '((elpy-company-backend :with company-yasnippet))))))
-    :init
-    (elpy-enable)
-    :config
-    (setq elpy-modules (delq 'elpy-module-flymake elpy-modules)
-          elpy-rpc-python-command "python3"
-          elpy-rpc-timeout 2
-          eldoc-idle-delay 2
-          company-idle-delay 0.5))
+(add-hook 'python-hook #'yas-minor-mode)
+
+(use-package lsp-python-ms
+  :defer 0.3
+  :custom (lsp-python-ms-auto-install-server t))
 
 (use-package py-pyment
-    :config
-    (setq py-pyment-options '("--output=numpydoc")))
+  :config (setq py-pyment-options '("--output=numpydoc")))
 
-(use-package py-isort
-    :hook (python-mode . py-isort-enable-on-save)
-    :config
-    (setq py-isort-options '("--line-length=100" "-m=3" "-tc" "-fgw=0" "-ca")))
-
-(use-package py-autoflake
-    :hook (python-mode . py-autoflake-enable-on-save)
-    :config
-    (setq py-autoflake-options '("--expand-star-imports")))
-
-(use-package py-docformatter
-    :hook (python-mode . py-docformatter-enable-on-save)
-    :config
-    (setq py-docformatter-options '("--wrap-summaries=100" "--pre-summary-newline")))
+(use-package python
+  :delight "π "
+  :bind (("M-<up>" . python-nav-backward-block)
+         ("M-<down>" . python-nav-forward-block))
+  :preface (defun python-remove-unused-imports()
+             "Removes unused imports and unused variables with autoflake."
+             (interactive)
+             (if (executable-find "autoflake")
+                 (progn
+                   (shell-command (format "autoflake --remove-all-unused-imports -i %s"
+                                          (shell-quote-argument (buffer-file-name))))
+                   (revert-buffer t t t))
+               (warn "python-mode: Cannot find autoflake executable.")))
+  :config (setq python-shell-interpreter "jupyter"
+                python-shell-interpreter-args "console --simple-prompt"
+                python-shell-prompt-detect-failure-warning nil
+                python-shell-completion-native-disabled-interpreters '("jupyter")))
 
 (use-package blacken
-    :hook (python-mode . blacken-mode)
-    :config
-    (setq blacken-line-length '100))
+  :delight
+  :hook (python-mode . blacken-mode)
+  :custom (blacken-line-length 80))
 
-(use-package python-docstring
-    :hook (python-mode . python-docstring-mode))
+(add-hook! 'before-save-hook #'blacken-buffer)
 
-(require 'yasnippet)
-(setq yas-triggers-in-field t)
-(yas-reload-all)
+(use-package lsp-pyright
+  :if (executable-find "pyright")
+  :hook (python-mode . (lambda ()
+                         (require 'lsp-pyright)
+                         (lsp))))
 
-(add-hook! 'python-mode-hook #'yas-minor-mode)
-(add-hook! 'python-mode-hook #'color-identifiers-mode)
-(add-hook! 'python-mode-hook #'auto-highlight-symbol-mode)
-(add-hook! 'python-mode-hook (modify-syntax-entry ?_ "w"))
+(use-package py-isort
+  :after python
+  :hook ((python-mode . pyvenv-mode)
+         (before-save . py-isort-before-save)))
 
-(after! python
-  (setq python-shell-interpreter "jupyter"
-        python-shell-interpreter-args "console --simple-prompt"
-        python-shell-prompt-detect-failure-warning nil)
-  (add-to-list 'python-shell-completion-native-disabled-interpreters
-               "jupyter"))
+(use-package direnv
+  :config
+  (direnv-mode))
+
+(use-package color-identifiers-mode
+  :after python
+  :hook (python-mode . color-identifiers-mode))
+
+(setq ein:output-area-inlined-images t)

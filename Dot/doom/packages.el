@@ -8,32 +8,27 @@
 ;; General
 
 (package! zoom)
-(package! auto-highlight-symbol)
 (package! color-identifiers-mode)
 
 ;; Dev
 
+(package! dap-mode)
+(package! lsp-mode)
+(package! lsp-ui)
+(package! direnv)
+(package! company-statistics)
 (package! yasnippet)
 (package! yasnippet-snippets)
 
-(package! company-try-hard)
-(package! company-quickhelp)
-(package! company-statistics)
-
 ;; Python
 
-(package! ein)
-(package! elpy)
 (package! blacken)
-(package! python-docstring)
+(package! ein)
+(package! lsp-python-ms)
+(package! lsp-pyright)
+(package! py-isort)
 
 (package! buftra
   :recipe (:host github :repo "humitos/buftra.el"))
 (package! py-pyment
-  :recipe (:host github :repo "humitos/py-cmd-buffer.el"))
-(package! py-isrot
-  :recipe (:host github :repo "humitos/py-cmd-buffer.el"))
-(package! py-autoflake
-  :recipe (:host github :repo "humitos/py-cmd-buffer.el"))
-(package! py-docformatter
   :recipe (:host github :repo "humitos/py-cmd-buffer.el"))
