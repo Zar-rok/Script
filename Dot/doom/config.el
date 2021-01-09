@@ -310,5 +310,8 @@ In that case, insert the number."
         lsp-modeline-diagnostics-mode nil
         lsp-enable-file-watchers nil))
 
+(after! dap-mode
+        (setq dap-python-debugger 'debugpy))
+
 (use-package py-pyment
   :config (setq py-pyment-options '("--output=numpydoc")))
