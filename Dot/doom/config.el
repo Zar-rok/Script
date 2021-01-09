@@ -83,7 +83,7 @@
   (add-hook 'after-change-major-mode-hook #'doom-modeline-conditional-buffer-encoding))
 
 (after! which-key
-  (setq which-key-idle-delay 0.1))
+  (setq which-key-idle-delay 0.05))
 
 ;; Key bindings
 
