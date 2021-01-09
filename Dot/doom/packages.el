@@ -7,26 +7,25 @@
 
 ;; General
 
-(package! zoom)
+(package! dimmer)
+(package! pdf-tools)
+(package! info-colors)
 (package! color-identifiers-mode)
+
+;; Notes
+
+(package! org-ref)
+(package! ivy-bibtex)
+(package! org-roam-bibtex)
+
+(package! org-pdftools)
+(package! org-noter-pdftools)
 
 ;; Dev
 
-(package! dap-mode)
-(package! lsp-mode)
-(package! lsp-ui)
-(package! direnv)
 (package! company-statistics)
-(package! yasnippet)
-(package! yasnippet-snippets)
 
 ;; Python
-
-(package! blacken)
-(package! ein)
-(package! lsp-python-ms)
-(package! lsp-pyright)
-(package! py-isort)
 
 (package! buftra
   :recipe (:host github :repo "humitos/buftra.el"))
