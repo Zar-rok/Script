@@ -38,7 +38,7 @@
 (add-hook 'prog-mode-hook #'display-line-numbers-mode)
 
 (setenv "DICPATH" dict-path)
-(setenv "DICTIONARY" "en-custom")
+(setenv "DICTIONARY" "en-custom,fr")
 
 (defun doom-dashboard-widget-banner () nil)
 (defun doom-dashboard-widget-loaded () nil)
@@ -53,12 +53,6 @@
 (add-hook 'Info-selection-hook 'info-colors-fontify-node)
 (add-hook 'Info-mode-hook #'mixed-pitch-mode)
 
-(require 'dimmer)
-(dimmer-configure-which-key)
-(dimmer-configure-helm)
-(dimmer-mode t)
-(setq dimmer-fraction 0.5)
-
 (use-package! display-fill-column-indicator
   :hook (prog-mode . display-fill-column-indicator-mode)
   :config
@@ -72,15 +66,6 @@
       doom-big-font (font-spec :family font-name :size 18)
       doom-variable-pitch-font (font-spec :family font-name :size 18)
       doom-serif-font (font-spec :family font-name :size 18))
-
-(defun doom-modeline-conditional-buffer-encoding ()
-(setq-local doom-modeline-buffer-encoding
-        (unless (or (eq buffer-file-coding-system 'utf-8)
-                        (eq buffer-file-coding-system 'utf-8-unix)))))
-
-(after! doom-modeline
-  (remove-hook 'doom-modeline-mode-hook #'size-indication-mode)
-  (add-hook 'after-change-major-mode-hook #'doom-modeline-conditional-buffer-encoding))
 
 (after! which-key
   (setq which-key-idle-delay 0.05))
@@ -142,74 +127,81 @@
 
 (setq org-ref-open-pdf-function #'my/org-ref-open-pdf-at-point)
 
-(after! org-noter
-  (setq org-noter-separate-notes-from-heading t
-        org-noter-notes-search-path '(org-notes-path)))
-
-(use-package org-pdftools
-  :hook (org-mode . org-pdftools-setup-link))
-
 (use-package org-noter-pdftools
   :after org-noter
   :config
   (with-eval-after-load 'pdf-annot
     (add-hook 'pdf-annot-activate-handler-functions #'org-noter-pdftools-jump-to-note)))
 
-(use-package org-roam-bibtex
-  :after org-roam
-  :hook (org-roam-mode . org-roam-bibtex-mode)
-  :config
-  (setq orb-preformat-keywords
-   '("=key=" "title" "url" "file" "author-or-editor" "keywords"))
-  (setq orb-templates
-        '(("r" "ref" plain (function org-roam-capture--get-point)
-           ""
-           :file-name "${slug}"
-           :head "#+TITLE: ${title}\n#+ROAM_KEY: ${ref}
+(use-package! org-ref
+    :config
+    (setq org-ref-get-pdf-filename-function (lambda (key) (car (bibtex-completion-find-pdf key)))
+          org-ref-default-bibliography (list biblio-path)
+          org-ref-bibliography-notes org-notes-path
+          org-ref-note-title-format "* NOTES %y - %t\n :PROPERTIES:\n  :Custom_ID: %k\n  :NOTER_DOCUMENT: %F\n :ROAM_KEY: cite:%k\n  :AUTHOR: %9a\n  :JOURNAL: %j\n  :YEAR: %y\n  :VOLUME: %v\n  :PAGES: %p\n  :DOI: %D\n  :URL: %U\n :END:\n\n"
+          org-ref-notes-directory org-notes-path
+          org-ref-notes-function #'orb-edit-notes))
 
-- tags ::
-- keywords :: ${keywords}
-
-\n* ${title}\n  :PROPERTIES:\n  :Custom_ID: ${=key=}\n  :URL: ${url}\n  :AUTHOR: ${author-or-editor}\n  :NOTER_DOCUMENT: %(orb-process-file-field \"${=key=}\")\n  :NOTER_PAGE: \n  :END:\n\n"
-           :unnarrowed t))))
-
-(after! bibtex-completion
+(after! org-ref
   (setq bibtex-completion-notes-path org-notes-path
+        bibtex-completion-pdf-open-function (lambda (fpath) (start-process "open" "*open*" "open" fpath))
         bibtex-completion-bibliography biblio-path
         bibtex-completion-pdf-field "file"
         bibtex-completion-notes-template-multiple-files
-        (concat
-        "#+TITLE: ${title}\n"
-        "#+ROAM_KEY: cite:${=key=}\n"
-        "* TODO Notes\n"
-        ":PROPERTIES:\n"
-        ":Custom_ID: ${=key=}\n"
-        ":NOTER_DOCUMENT: %(orb-process-file-field \"${=key=}\")\n"
-        ":AUTHOR: ${author-abbrev}\n"
-        ":JOURNAL: ${journaltitle}\n"
-        ":DATE: ${date}\n"
-        ":YEAR: ${year}\n"
-        ":DOI: ${doi}\n"
-        ":URL: ${url}\n"
-        ":END:\n\n")))
+        (concat "#+TITLE: ${title}\n"
+                "#+ROAM_KEY: cite:${=key=}"
+                "#+ROAM_TAGS: ${keywords}"
+                "#+CREATED:%<%Y-%m-%d-%H-%M-%S>"
+                "Time-stamp: <>\n"
+                "- tags :: \n"
+                "* NOTES \n"
+                ":PROPERTIES:\n"
+                ":Custom_ID: ${=key=}\n"
+                ":NOTER_DOCUMENT: %(orb-process-file-field \"${=key=}\")\n"
+                ":AUTHOR: ${author-abbrev}\n"
+                ":JOURNAL: ${journaltitle}\n"
+                ":DATE: ${date}\n"
+                ":YEAR: ${year}\n"
+                ":DOI: ${doi}\n"
+                ":URL: ${url}\n"
+                ":END:\n\n")))
 
-(setq org-ref-get-pdf-filename-function
-      (lambda (key) (car (bibtex-completion-find-pdf key))))
+(use-package! org-roam-bibtex
+  :after (org-roam)
+  :hook (org-roam-mode . org-roam-bibtex-mode)
+  :config
+  (setq orb-preformat-keywords
+        '("=key=" "title" "url" "file" "author-or-editor" "keywords"))
+  (setq orb-templates
+        '(("r" "ref" plain (function org-roam-capture--get-point)
+           ""
+           :file-name "literature/%<%Y-%m-%d-%H-%M-%S>-${slug}"
+           :head "#+TITLE: ${=key=}: ${title}
+#+ROAM_KEY: ${ref}
+#+ROAM_TAGS:
+Time-stamp: <>
+- tags :: ${keywords}
 
-(use-package org-ref
-    :config
-    (setq org-ref-completion-library #'org-ref-ivy-cite-completion
-          org-ref-get-pdf-filename-function #'org-ref-get-pdf-filename-function
-          org-ref-notes-function #'orb-edit-notes
-          org-ref-default-bibliography '(biblio-path)
-          org-ref-bibliography-notes org-notes-path
-          org-ref-note-title-format "* TODO %y - %t\n :PROPERTIES:\n  :Custom_ID: %k\n  :NOTER_DOCUMENT: %F\n :ROAM_KEY: cite:%k\n  :AUTHOR: %9a\n  :JOURNAL: %j\n  :YEAR: %y\n  :VOLUME: %v\n  :PAGES: %p\n  :DOI: %D\n  :URL: %U\n :END:\n\n"
-          org-ref-notes-directory org-notes-path))
+* ${title}
+  :PROPERTIES:
+  :Custom_ID: ${=key=}
+  :URL: ${url}
+  :AUTHOR: ${author-or-editor}
+  :NOTER_DOCUMENT: %(orb-process-file-field \"${=key=}\")
+  :NOTER_PAGE:
+  :END:
+
+"
+           :unnarrowed t))))
+
+(use-package! org-noter
+  :after (:any org pdf-view)
+  :config
+  (setq
+   org-noter-hide-other nil
+   org-noter-notes-search-path org-notes-path))
 
 ;; Windows
-
-(setq evil-vsplit-window-right t
-      evil-split-window-below t)
 
 (defadvice! prompt-for-buffer (&rest _)
   :after '(evil-window-split evil-window-vsplit)
@@ -226,42 +218,32 @@
       ad-do-it)))
 
 (after! evil
-  (evil-escape-mode nil)
-  (evil-ex-define-cmd "q" #'kill-this-buffer)
-  (evil-ex-define-cmd "quit" #'evil-quit))
+  (evil-ex-define-cmd "q" #'kill-this-buffer))
 
 ;; PDF
 
-(use-package pdf-tools
-  :config
-  (custom-set-variables
-    '(pdf-tools-handle-upgrades nil))
-  (setq pdf-info-epdfinfo-program epdfinfo-path
-        pdf-view-display-size 'fit-width))
-;; (pdf-tools-install) ;; Need to do this only once.
+(after! pdf-tools
+  (setq pdf-info-epdfinfo-program epdfinfo-path))
 
 ;; Deft
 
 (after! deft
-  (setq deft-directory 'org-notes-path
-        deft-extensions '("org")
+  (setq deft-directory org-notes-path
         deft-recursive t))
 
 ;; Dev
 
 (after! lsp-mode
-  (setq lsp-log-io nil
-        lsp-print-performance nil
-        lsp-keep-workspace-alive nil))
+  (setq lsp-keep-workspace-alive nil
+        lsp-modeline-diagnostics-mode nil
+        lsp-enable-file-watchers nil))
 
 (after! lsp-ui
-  (setq lsp-ui-doc-enable nil
-        lsp-ui-sideline-show-diagnostics t
+  (setq lsp-ui-sideline-show-diagnostics t
         lsp-ui-sideline-delay 0))
 
 (after! company
-  (setq company-idle-delay 0
-        company-minimum-prefix-length 2
+  (setq company-idle-delay 0.1
         company-show-numbers t)
 
   ;; https://oremacs.com/2017/12/27/company-numbers/
@@ -306,12 +288,10 @@ In that case, insert the number."
 (set-formatter! 'black "black -q --pyi -l 80 -" :modes '(python-mode))
 
 (after! lsp-pyright
-  (setq lsp-pyright-use-library-code-for-types t
-        lsp-modeline-diagnostics-mode nil
-        lsp-enable-file-watchers nil))
+  (setq lsp-pyright-use-library-code-for-types t))
 
 (after! dap-mode
-        (setq dap-python-debugger 'debugpy))
+  (setq dap-python-debugger 'debugpy))
 
 (use-package py-pyment
   :config (setq py-pyment-options '("--output=numpydoc")))

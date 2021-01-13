@@ -7,18 +7,13 @@
 
 ;; General
 
-(package! dimmer)
-(package! pdf-tools)
 (package! info-colors)
 (package! color-identifiers-mode)
 
 ;; Notes
 
 (package! org-ref)
-(package! ivy-bibtex)
 (package! org-roam-bibtex)
-
-(package! org-pdftools)
 (package! org-noter-pdftools)
 
 ;; Dev
