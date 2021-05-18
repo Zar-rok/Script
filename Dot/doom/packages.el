@@ -8,7 +8,10 @@
 ;; General
 
 (package! info-colors)
-(package! color-identifiers-mode)
+(package! tree-sitter)
+(package! tree-sitter-langs)
+
+(package! modus-themes)
 
 ;; Notes
 
@@ -26,3 +29,5 @@
   :recipe (:host github :repo "humitos/buftra.el"))
 (package! py-pyment
   :recipe (:host github :repo "humitos/py-cmd-buffer.el"))
+(package! py-autoflake
+  :recipe (:host github :repo "humitos/py-autoflake.el"))

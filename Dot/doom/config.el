@@ -8,8 +8,8 @@
 (setq user-full-name nil
       user-mail-address nil
       current-home (getenv "HOME")
+      default-directory current-home
       org-notes-path (concat current-home nil)
-      org-roam-directory-path (concat org-notes-path nil)
       biblio-path (concat current-home nil)
       dict-path (concat current-home nil)
       plantuml-path (concat current-home nil)
@@ -17,9 +17,15 @@
       hunspell-path nil
       epdfinfo-path nil)
 
+(setenv "DICPATH" dict-path)
+(setenv "DICTIONARY" "en-custom,fr")
+
 ;; General
 
 (setq-default major-mode 'org-mode)
+
+(after! persp-mode
+  (setq persp-emacsclient-init-frame-behaviour-override "main"))
 
 (setq undo-limit 80000000
       evil-want-fine-undo t
@@ -37,9 +43,6 @@
 (add-hook 'text-mode-hook #'display-line-numbers-mode)
 (add-hook 'prog-mode-hook #'display-line-numbers-mode)
 
-(setenv "DICPATH" dict-path)
-(setenv "DICTIONARY" "en-custom,fr")
-
 (defun doom-dashboard-widget-banner () nil)
 (defun doom-dashboard-widget-loaded () nil)
 (defun doom-dashboard-widget-footer () nil)
@@ -50,7 +53,7 @@
 (use-package! info-colors
   :commands (info-colors-fontify-node))
 
-(add-hook 'Info-selection-hook 'info-colors-fontify-node)
+(add-hook 'Info-selection-hook #'info-colors-fontify-node)
 (add-hook 'Info-mode-hook #'mixed-pitch-mode)
 
 (use-package! display-fill-column-indicator
@@ -59,9 +62,16 @@
   (setq fill-column 80)
   (set-face-attribute 'fill-column-indicator nil :foreground "grey25"))
 
+(use-package! modus-themes
+  :init
+  (modus-themes-load-themes)
+  :config
+  (modus-themes-load-operandi))
+
 ;; Doom
 
-(setq doom-theme 'doom-gruvbox)
+;; (setq doom-theme 'doom-gruvbox)
+(setq doom-theme 'modus-operandi)
 (setq doom-font (font-spec :family font-name :size 18)
       doom-big-font (font-spec :family font-name :size 18)
       doom-variable-pitch-font (font-spec :family font-name :size 18)
@@ -73,14 +83,18 @@
 ;; Key bindings
 
 (map! :leader
-      (:prefix "w"
-       :n "<up>" #'evil-window-up
+      (:n "<up>" #'evil-window-up
        :n "<right>" #'evil-window-right
        :n "<down>" #'evil-window-down
-       :n "<left>" #'evil-window-left
+       :n "<left>" #'evil-window-left)
+      (:prefix "w"
        :n "DEL" #'kill-buffer-and-window)
       (:prefix "v"
-       :desc "Spell check the buffer" :n "v" #'flyspell-buffer))
+       :desc "Spell check the buffer" :n "v" #'flyspell-buffer)
+      (:prefix "o"
+       :n "w" #'browse-url-at-point)
+      (:prefix "t"
+       :n "t" #'modus-themes-toggle))
 
 (map! :after pdf-view
       :map pdf-view-mode-map
@@ -109,11 +123,17 @@
 ;; Org
 
 (setq org-directory org-notes-path
-      org-roam-directory org-roam-directory-path
+      org-roam-directory org-notes-path
+      +org-roam-open-buffer-on-find-file nil
       org-log-done 'time
       org-babel-python-command "python3"
       org-plantuml-jar-path plantuml-path
       org-todo-keywords '((sequence "TODO(t)" "NEXT(n)" "HOLD(h)" "|" "DONE(d)")))
+
+(setq org-fontify-done-headline t)
+(custom-set-faces
+ '(org-headline-done ((t (:strike-through t)))))
+;; (set-face-attribute org-headline-done nil :strike-through t)
 
 (defun my/org-ref-open-pdf-at-point ()
   "Open the pdf for bibtex key under point if it exists."
@@ -228,10 +248,16 @@ Time-stamp: <>
 ;; Deft
 
 (after! deft
-  (setq deft-directory org-notes-path
-        deft-recursive t))
+  (setq deft-directory org-notes-path)
+  (set-evil-initial-state! 'deft-mode 'normal))
 
 ;; Dev
+
+(use-package! tree-sitter
+  :config
+  (require 'tree-sitter-langs)
+  (global-tree-sitter-mode)
+  (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode))
 
 (after! lsp-mode
   (setq lsp-keep-workspace-alive nil
@@ -274,24 +300,36 @@ In that case, insert the number."
 (use-package company-statistics
   :init (company-statistics-mode))
 
-(use-package color-identifiers-mode
-  :hook (prog-mode . color-identifiers-mode))
-
 ;; Python
 
 (after! python
-  (setq python-shell-interpreter "jupyter"
-        python-shell-interpreter-args "console --simple-prompt"
-        python-shell-completion-native-disabled-interpreters '("jupyter")
+  (setq python-shell-interpreter "python3"
+        python-shell-completion-native-disabled-interpreters '("python3")
         python-shell-prompt-detect-failure-warning nil))
+  ;; (setq python-shell-interpreter "jupyter"
+  ;;       python-shell-interpreter-args "console --simple-prompt"
+  ;;       python-shell-completion-native-disabled-interpreters '("jupyter")
+  ;;       python-shell-prompt-detect-failure-warning nil))
 
-(set-formatter! 'black "black -q --pyi -l 80 -" :modes '(python-mode))
+(set-formatter! 'black "black -q -l 80 -" :modes '(python-mode))
 
 (after! lsp-pyright
-  (setq lsp-pyright-use-library-code-for-types t))
+  (setq lsp-pyright-use-library-code-for-types t
+        lsp-pyright-python-executable-cmd "python3"))
 
 (after! dap-mode
   (setq dap-python-debugger 'debugpy))
 
 (use-package py-pyment
   :config (setq py-pyment-options '("--output=numpydoc")))
+
+(setq py-autoflake-options
+      '("--remove-all-unused-imports" "--remove-unused-variables"))
+(add-hook! 'python-mode-hook 'py-autoflake-enable-on-save)
+
+(setq py-isort-options '("-l 80"))
+(add-hook! 'python-mode-hook #'py-isort-enable-on-save)
+
+;; Start things
+
+;; (add-hook 'after-init-hook #'toggle-frame-fullscreen)
