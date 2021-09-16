@@ -10,7 +10,9 @@
 
 ![xfce4-panel items](xfce4-panel-items.png)
 
-The only non default item is [xfce4-windowck-plugin](https://github.com/cedl38/xfce4-windowck-plugin).
+~~The only non default item is [xfce4-windowck-plugin](https://github.com/cedl38/xfce4-windowck-plugin).~~
+
+Replaced by [xfce4-namebar](https://github.com/HugLifeTiZ/xfce4-namebar-plugin).
 
 The clock is displayed with the `%R` format.
 
