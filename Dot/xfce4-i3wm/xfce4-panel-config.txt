@@ -1,0 +1,36 @@
+/configver 2
+/panels [<0>]
+/panels/panel-0/autohide-behavior uint32 0
+/panels/panel-0/background-rgba [<0.168627>, <0.180392>, <0.21568599999999999>, <0.94999999999999996>]
+/panels/panel-0/background-style uint32 0
+/panels/panel-0/disable-struts false
+/panels/panel-0/icon-size uint32 24
+/panels/panel-0/length uint32 100
+/panels/panel-0/length-adjust true
+/panels/panel-0/mode uint32 0
+/panels/panel-0/plugin-ids [<1>, <2>, <3>, <4>, <5>, <6>, <7>, <8>, <9>, <12>, <11>, <13>]
+/panels/panel-0/position 'p=6;x=0;y=0'
+/panels/panel-0/position-locked true
+/panels/panel-0/size uint32 36
+/panels/panel-0/span-monitors false
+/plugins/plugin-1 'pager'
+/plugins/plugin-2 'separator'
+/plugins/plugin-2/expand true
+/plugins/plugin-2/style uint32 0
+/plugins/plugin-3 'namebar'
+/plugins/plugin-4 'separator'
+/plugins/plugin-4/expand true
+/plugins/plugin-4/style uint32 0
+/plugins/plugin-5 'statusnotifier'
+/plugins/plugin-6 'separator'
+/plugins/plugin-6/style uint32 2
+/plugins/plugin-7 'pulseaudio'
+/plugins/plugin-7/enable-keyboard-shortcuts true
+/plugins/plugin-8 'power-manager-plugin'
+/plugins/plugin-9 'separator'
+/plugins/plugin-9/style uint32 2
+/plugins/plugin-11 'separator'
+/plugins/plugin-11/style uint32 3
+/plugins/plugin-12 'clock'
+/plugins/plugin-12/digital-format '%R'
+/plugins/plugin-13 'systemload'

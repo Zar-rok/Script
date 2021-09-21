@@ -20,6 +20,8 @@ The style of the panel is defined in the [gtk.css](.config/gtk-3.0/gtk.css) file
 
 Install `fonts-noto`.
 
+The panel configuration is defined in [xfce4-panel-config.txt](xfce4-panel-config.txt) and can be loaded via the [xfce4-panel-profiles](https://docs.xfce.org/apps/xfce4-panel-profiles/start#examples) command.
+
 4. Compton [config file](.config/.compton.conf) to have opacity support for `xfce4-notifyd`. Based on [Howto: Using Compton for tear-free compositing on XFCE or LXDE](https://ubuntuforums.org/showthread.php?t=2144468&p=12644745#post12644745).
 
 5. Rofi [config file](.config/rofi/config).

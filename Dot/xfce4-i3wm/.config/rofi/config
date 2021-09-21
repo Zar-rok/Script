@@ -1,6 +1,6 @@
 rofi.modi:               window,drun,run
-rofi.font:               Hack 13
-rofi.width:              75
+rofi.font:               Hack 20
+rofi.width:              80
 rofi.lines:              12
 rofi.theme:              /usr/share/rofi/themes/Arc-Dark.rasi
 rofi.padding:            20
@@ -8,7 +8,7 @@ rofi.opacity:            100
 rofi.columns:            3
 rofi.location:           0
 rofi.show-icons:         true
-rofi.icon-theme:         'Numix-Circle-Light'
+rofi.icon-theme:         "Numix-Circle-Light"
 rofi.sidebar-mode:       true
 rofi.terminal:           xfce4-terminal
 rofi.markup-rows:        false
