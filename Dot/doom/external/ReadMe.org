@@ -1,6 +1,8 @@
 #+TITLE: Emacs daemon configuration
 
-* [[https://www.emacswiki.org/emacs/EmacsAsDaemon#h5o-2][Emacs daemon as a service]]
+Run Emacs as a service and open frames via the client.
+
+** [[https://www.emacswiki.org/emacs/EmacsAsDaemon#h5o-2][Emacs daemon as a service]]
 
 #+BEGIN_SRC bash
 ln -s "$(pwd)/emacsclient_dwim.sh" ~/.config/systemd/user/emacs.service
@@ -8,21 +10,21 @@ systemctl enable --user emacs
 systemctl start --user emacs
 #+END_SRC
 
-* [[https://www.reddit.com/r/emacs/comments/a5uzeb/how_can_emacsclient_create_a_new_frame_when_none/ebqivc0/][~emacsclient~ DWIM]]
+** [[https://www.reddit.com/r/emacs/comments/a5uzeb/how_can_emacsclient_create_a_new_frame_when_none/ebqivc0/][Script ~emacsclient~ DWIM]]
 
-The script ~emacsclient_dwim.sh~ aim to open a file in the existing frame or in a new one if non are open.
+The script ~emacsclient_dwim.sh~ aims to open a file in the existing frame or in a new one if non are open.
 
 #+BEGIN_SRC bash
 ln -s "$(pwd)/emacsclient_dwim.sh" ~/.local/bin/emacsclient_dwim.sh
 #+END_SRC
 
-* Add ~emacsclient~ in the applications choice
+** Add ~emacsclient~ in the applications choice
 
 #+BEGIN_SRC bash
 ln -s "$(pwd)/emacsclient.desktop" ~/.local/share/applications/emacsclient.desktop
 #+END_SRC
 
-* [[https://vurt.co.uk/post/org_capture_configuration/][Add ~org-protocol~ in the applications choice]]
+** [[https://vurt.co.uk/post/org_capture_configuration/][Add ~org-protocol~ in the applications choice]]
 
 #+BEGIN_SRC bash
 ln -s "$(pwd)/org-protocol-handler.desktop" ~/.local/share/applications/org-protocol-handler.desktop
