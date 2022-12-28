@@ -7,27 +7,27 @@
 
 ;; General
 
-(package! info-colors)
 (package! tree-sitter)
 (package! tree-sitter-langs)
-
 (package! modus-themes)
-
-;; Notes
-
-(package! org-ref)
-(package! org-roam-bibtex)
-(package! org-noter-pdftools)
+(package! langtool)
 
 ;; Dev
 
-(package! company-statistics)
+(package! ipython-shell-send)
+
+(package! gitconfig-mode
+  :recipe (:host github :repo "magit/git-modes"
+           :files ("gitconfig-mode.el")))
+(package! gitignore-mode
+  :recipe (:host github :repo "magit/git-modes"
+           :files ("gitignore-mode.el")))
 
 ;; Python
 
 (package! buftra
   :recipe (:host github :repo "humitos/buftra.el"))
-(package! py-pyment
-  :recipe (:host github :repo "humitos/py-cmd-buffer.el"))
 (package! py-autoflake
   :recipe (:host github :repo "humitos/py-autoflake.el"))
+
+(package! numpydoc)
