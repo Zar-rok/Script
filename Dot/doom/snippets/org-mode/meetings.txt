@@ -1,0 +1,10 @@
+# -*- mode: snippet -*-
+# name: meetings
+# contributor: Zar <zar_rok@live.fr>
+# type: command
+# key: met
+# --
+(insert "* ")
+(org-time-stamp nil)
+(insert " ")
+(org-set-tags-command nil)
