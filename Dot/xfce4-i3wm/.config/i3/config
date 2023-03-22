@@ -38,10 +38,8 @@ bindsym XF86Tools exec xfce4-settings-manager
 bindsym XF86Search exec catfish --start --large-icons --thumbnails --path=/home/paul
 bindsym XF86LaunchA layout toggle split
 bindsym XF86Explorer exec xfce4-screensaver-command -l
-bindsym Print exec xfce4-screenshooter
-
-# split
-bindsym $super+s split toggle
+bindsym $super+Print exec xfce4-screenshooter
+bindsym $super+twosuperior exec --no-startup-id pactl set-sink-mute @DEFAULT_SINK@ toggle
 
 # kill focused window
 bindsym $super+c kill
@@ -53,17 +51,31 @@ bindsym $super+Down focus down
 bindsym $super+Up focus up
 bindsym $super+Right focus right
 
+bindsym $super+h focus left
+bindsym $super+j focus down
+bindsym $super+k focus up
+bindsym $super+l focus right
+
 # move focused window
 bindsym $super+Shift+Left move left
 bindsym $super+Shift+Down move down
 bindsym $super+Shift+Up move up
 bindsym $super+Shift+Right move right
 
+# move focused window monitor
+bindsym $super+Shift+Control+Left move container to output left; focus left
+bindsym $super+Shift+Control+Down move container to output down; focus down
+bindsym $super+Shift+Control+Up move container to output up; focus up
+bindsym $super+Shift+Control+Right move container to output right; focus right
+
 # enter fullscreen mode for the focused container
 bindsym $super+shift+f fullscreen toggle
 
+# split
+bindsym $super+s split toggle
+
 # change container layout split
-bindsym $super+less layout toggle split
+bindsym $super+Control+s layout toggle split
 
 # toggle tiling / floating
 bindsym $super+space floating toggle
@@ -107,6 +119,7 @@ bindsym $super+r mode "resize"
 # window rules, you can find the window class using xprop
 for_window [class=".*"] border pixel 1.5
 for_window [class="Skype"] floating disable
+for_window [class="Pympress"] floating enable
 for_window [title="File Upload|Attach File(s)|Enter name of file to save to…"] floating enable, resize set 1346 748, move absolute position 10 10
 
 hide_edge_borders smart
