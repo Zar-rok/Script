@@ -7,10 +7,9 @@
 
 ;; General
 
-(package! tree-sitter)
-(package! tree-sitter-langs)
 (package! modus-themes)
-(package! langtool)
+
+(package! keycast)
 
 ;; Dev
 

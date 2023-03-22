@@ -7,7 +7,7 @@
 
 (setq user-full-name nil
       user-mail-address nil
-      current-home (getenv nil)
+      current-home (getenv "HOME")
       default-directory current-home
       org-notes-path (concat current-home nil)
       org-meetings-path (concat org-notes-path nil)
@@ -21,12 +21,7 @@
 
 (setq initial-major-mode #'org-mode
       initial-scratch-message
-      "| Start | End | Δ |
-|-------+-----+---|
-|       |     |   |
-#+TBLFM: $3=$2-$1
-
-#+BEGIN_SRC python
+      "#+BEGIN_SRC python
 #+END_SRC
 
 #+BEGIN_SRC calc
@@ -42,7 +37,7 @@
       select-enable-clipboard t
       kill-do-not-save-duplicates t
       save-interprogram-paste-before-kill t
-      +modeline-height 22)
+      +modeline-height 16)
 
 (setq-default display-line-numbers-type 'relative
               display-line-numbers-width 3
@@ -73,20 +68,35 @@
   :config
   (modus-themes-load-operandi))
 
-(use-package orderless
+(use-package! orderless
   :custom (completion-styles '(orderless)))
+
+(add-to-list 'auto-mode-alist '("\\.pl\\'" . prolog-mode))
+(add-to-list 'default-frame-alist '(inhibit-double-buffering . t))
 
 ;; Language
 
 (use-package langtool
   :config
-  (setq langtool-language-tool-jar "/opt/LanguageTool-5.4/languagetool-commandline.jar"
-        langtool-http-server-host "localhost"
-        langtool-http-server-port 8081
-        langtool-default-language "en"))
+  (setq langtool-http-server-host "localhost"
+        langtool-http-server-port 8081))
+
+;; https://github.com/flycheck/flycheck/issues/1762#issuecomment-750458442
+;; (defvar-local zar/flycheck-local-cache nil)
+
+;; (defun zar/flycheck-checker-get (fn checker property)
+;;   (or (alist-get property (alist-get checker zar/flycheck-local-cache))
+;;       (funcall fn checker property)))
+
+;; (advice-add 'flycheck-checker-get :around 'zar/flycheck-checker-get)
+
+;; (add-hook 'lsp-managed-mode-hook
+;;           (lambda ()
+;;             (when (derived-mode-p 'tex-mode)
+;;               (setq zar/flycheck-local-cache '((lsp . ((next-checkers . (tex-chktex)))))))))
 
 (setenv "DICPATH" "/usr/share/hunspell")
-(setenv "DICTIONARY" "en-custom,fr-custom,de")
+(setenv "DICTIONARY" "en_US,fr-custom,de")
 (after! ispell
   (setq ispell-program-name "hunspell"
         ispell-personal-dictionary "~/.hunspell_personal"))
@@ -98,7 +108,7 @@
       shr-max-width 80)
 
 (add-hook 'eww-after-render-hook #'eww-readable)
-(add-hook 'eww-after-render-hook (lambda () (scroll-lock-mode)))
+;; (add-hook 'eww-after-render-hook (lambda () (scroll-lock-mode)))
 
 (after! evil-easymotion
   (evilem-make-motion
@@ -109,63 +119,23 @@
 ;; Doom
 
 (setq doom-theme 'modus-operandi)
-(setq doom-font (font-spec :family font-name :size 28)
-      doom-big-font (font-spec :family font-name :size 28)
-      doom-variable-pitch-font (font-spec :family font-name :size 28)
-      doom-serif-font (font-spec :family font-name :size 28))
+(setq doom-font (font-spec :family font-name :size 26)
+      doom-big-font (font-spec :family font-name :size 26)
+      doom-variable-pitch-font (font-spec :family font-name :size 26)
+      doom-serif-font (font-spec :family font-name :size 26))
 
 (after! which-key
   (setq which-key-idle-delay 0.05))
 
-;; Key bindings
-
-(map! :leader
-      (:n "<up>" #'evil-window-up
-       :n "<right>" #'evil-window-right
-       :n "<down>" #'evil-window-down
-       :n "<left>" #'evil-window-left
-       :n "DEL" #'kill-buffer-and-window)
-      (:prefix "v"
-       :desc "Spell check the buffer" :n "v" #'flyspell-buffer)
-      (:prefix "o"
-       :n "w" #'browse-url-at-point)
-      (:prefix "t"
-       :n "t" #'modus-themes-toggle))
-
-(map! :after eww
-      :map eww-mode-map
-      :n "S-<up>" #'backward-paragraph
-      :n "S-<down>" #'forward-paragraph
-      (:prefix "g"
-       :n "<tab>" #'evilem-motion-shr-next-link))
-
-(map! :after pdf-view
-      :map pdf-view-mode-map
-      :n "<s-wheel-up>" #'image-backward-hscroll
-      :n "<s-wheel-down>" #'image-forward-hscroll
-      :n "<s-double-wheel-up>" #'image-backward-hscroll
-      :n "<s-double-wheel-down>" #'image-forward-hscroll
-      :n "<s-triple-wheel-up>" #'image-backward-hscroll
-      :n "<s-triple-wheel-down>" #'image-forward-hscroll)
-
-(map! :after evil-org
-      :map evil-org-mode-map
-      :n "S-<up>" #'org-previous-visible-heading
-      :n "S-<down>" #'org-next-visible-heading)
-
-(map! :after python
-      :map python-mode-map
-      :n "S-<up>" #'python-nav-backward-block
-      :n "S-<down>" #'python-nav-forward-block)
-
-(map! :n "<end>" #'end-of-line)
-(map! :n "<home>" #'beginning-of-line)
-(evil-global-set-key 'insert (kbd "<end>") #'end-of-line)
-(evil-global-set-key 'insert (kbd "<home>") #'beginning-of-line)
-
 ;; Org
 
-(defun zar-org-agenda-find-files ()
+(defun zar/org-time-stamp ()
+  (interactive)
+  (if (equal "*" (string (preceding-char)))
+      (insert " "))
+  (org-time-stamp nil))
+
+(defun zar/org-agenda-find-files ()
   (let* ((cmd (format "find %s -name \"*.org\"" org-notes-path))
          (files (shell-command-to-string cmd))
          (list-files (split-string files "\n")))
@@ -179,7 +149,7 @@
         org-babel-python-command "python3"
         org-plantuml-jar-path plantuml-path
         org-todo-keywords '((sequence "TODO(t)" "NEXT(n)" "STRT(s)" "HOLD(h)" "|" "DONE(d)"))
-        org-agenda-files (zar-org-agenda-find-files)
+        org-agenda-files (zar/org-agenda-find-files)
         org-agenda-show-future-repeats nil
         org-capture-templates
         '(("m" "Meeting" entry (file org-meetings-path)
@@ -277,16 +247,19 @@
     (with-syntax-table table
       ad-do-it)))
 
-(defun zar-save-then-kill-this-buffer ()
+(defun zar/save-then-kill-this-buffer ()
   "Save then kill the current buffer."
   (interactive)
   (basic-save-buffer)
   (kill-current-buffer))
 
 (after! evil
-  (evil-ex-define-cmd "wq" #'zar-save-then-kill-this-buffer)
+  (evil-ex-define-cmd "wq" #'zar/save-then-kill-this-buffer)
   (evil-ex-define-cmd "q" #'kill-this-buffer)
-  (customize-set-variable 'evil-want-minibuffer t))
+  (customize-set-variable 'evil-want-minibuffer t)
+  (setq +evil-want-o/O-to-continue-comments nil
+        evil-move-cursor-back nil
+        evil-kill-on-visual-paste nil))
 
 ;; PDF
 
@@ -302,14 +275,19 @@
 ;; Latex
 
 (add-hook 'LaTeX-mode-hook 'prettify-symbols-mode)
+(after! reftex
+  (setq reftex-default-bibliography "/home/paul/Documents/thesis-manuscript-gitlab"))
+
+(after! tex
+  (setq TeX-engine 'luatex
+        +latex-viewers '(pdf-tools mupdf)))
+
+;; Projectile
+
+(after! projectile
+  (add-to-list 'projectile-globally-ignored-directories ".direnv"))
 
 ;; Dev
-
-(use-package! tree-sitter
-  :config
-  (require 'tree-sitter-langs)
-  (global-tree-sitter-mode)
-  (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode))
 
 (after! lsp-mode
   (setq lsp-keep-workspace-alive nil
@@ -321,16 +299,15 @@
         lsp-ui-sideline-delay 0.1))
 
 (after! company
-  (setq company-idle-delay 0.1
-        company-show-quick-access t))
+  (setq company-idle-delay 0.5
+        company-minimum-prefix-length 2)
+  (add-hook 'evil-normal-state-entry-hook #'company-abort))
 
 ;; Python
 
 (after! python
   (setq python-shell-interpreter "ipython"
         python-shell-interpreter-args "-i --simple-prompt --InteractiveShell.display_page=True"))
-
-(set-formatter! 'black "black -q -l 80 -" :modes '(python-mode))
 
 (after! lsp-pyright
   (setq lsp-pyright-use-library-code-for-types t
@@ -342,7 +319,9 @@
 
 (use-package numpydoc
   :bind (:map python-mode-map
-         ("c-c c-n" . numpydoc-generate)))
+         ("C-c C-n" . numpydoc-generate)))
+
+(set-formatter! 'black "black -q -l 80 -" :modes '(python-mode))
 
 (setq py-autoflake-options
       '("--remove-all-unused-imports" "--remove-unused-variables"))
@@ -366,3 +345,68 @@
              '("eww"
                :protocol "eww"
                :function mw-start-eww-for-url))
+
+;; Key bindings
+
+(defun zar/window-move-dwim (direction)
+  "Move to the window in the given DIRECTION, within Emacs if it exists,
+otherwise within i3wm. Raise an error if the DIRECTION is not equal to either:
+up, down, left, or right."
+  (interactive)
+  (if (not (member direction '("up" "down" "left" "right")))
+      (error "The direction `%s' must be either equal to: `up', `down', `left', or `right'." direction))
+  (condition-case nil
+      (funcall (intern (format "evil-window-%s" direction)) 1)
+    (error (shell-command (format "i3-msg \"focus %s\" -q" direction) nil nil))))
+
+(defun zar/setup-window-move (direction)
+  "Define move functions for the given DIRECTION."
+  (with-temp-buffer
+    (insert (format "(defun zar/move-%s () (interactive) (zar/window-move-dwim \"%s\"))" direction direction))
+    (eval-buffer)))
+
+(mapcar #'zar/setup-window-move '("up" "down" "left" "right"))
+
+(map! :leader
+      (:n "<up>" #'zar/move-up
+       :n "k" #'zar/move-up
+       :n "<right>" #'zar/move-right
+       :n "l" #'zar/move-right
+       :n "<down>" #'zar/move-down
+       :n "j" #'zar/move-down
+       :n "<left>" #'zar/move-left
+       :n "h" #'zar/move-left
+       :n "ù" #'evil-switch-to-windows-last-buffer
+       :n "DEL" #'kill-buffer-and-window)
+      (:prefix "v"
+       :desc "Spell check the buffer" :n "v" #'flyspell-buffer)
+      (:prefix "o"
+       :n "w" #'browse-url-at-point)
+      (:prefix "t"
+       :n "t" #'modus-themes-toggle))
+
+(map! :after org-mode
+      :map org-mode-map
+      (:prefix "m"
+               (:prefix "d"
+                :n "t" #'zar/org-time-stamp)))
+
+(map! :after eww
+      :map eww-mode-map
+      (:prefix "g"
+       :n "<tab>" #'evilem-motion-shr-next-link))
+
+(map! :after pdf-view
+      :map pdf-view-mode-map
+      :n "<s-wheel-up>" #'image-backward-hscroll
+      :n "<s-wheel-down>" #'image-forward-hscroll
+      :n "<s-double-wheel-up>" #'image-backward-hscroll
+      :n "<s-double-wheel-down>" #'image-forward-hscroll
+      :n "<s-triple-wheel-up>" #'image-backward-hscroll
+      :n "<s-triple-wheel-down>" #'image-forward-hscroll)
+
+(map! :n "<end>" #'end-of-line)
+(map! :n "<home>" #'beginning-of-line)
+(evil-global-set-key 'insert (kbd "<end>") #'end-of-line)
+(evil-global-set-key 'insert (kbd "<home>") #'beginning-of-line)
+
