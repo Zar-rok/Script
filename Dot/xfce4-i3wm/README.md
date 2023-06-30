@@ -30,14 +30,13 @@ The panel configuration is defined in [xfce4-panel-config.txt](xfce4-panel-confi
 
 | Binding        | Command         |
 |----------------|-----------------|
-| Alt+Space      | `rofi`            |
-| Alt+t          | [`xfce4-dict`](.config/rofi/trad.sh)      |
-| Alt+f          | [`catfish`](.config/rofi/srch.sh)         |
-| Super+w        | `firefox`         |
-| Super+f        | `thunar`          |
+| Super+²      | Mutes sound  |
 | Super+e        | `emacs`           |
-| Alt+Ctrl+Shift | [`go_empty.sh`](.config/i3/go_empty.sh)     |
-| Alt+left       | [`move_next.sh -1`](.config/i3/move_next.sh) |
-| Alt+right      | [`move_next.sh 1`](.config/i3/move_next.sh)  |
-| Alt+down       | [`move_last.sh`](.config/i3/move_last.sh)    |
-
+| Super+w        | `firefox`         |
+| Alt+Ctrl+Shift+Right | [`go_empty.sh`](.config/i3/go_empty.sh)     |
+| Alt+left       | [`move.sh -1`](.config/i3/move.sh) |
+| Alt+right      | [`move.sh 1`](.config/i3/move.sh)  |
+| Alt+Space      | `rofi`            |
+| Super+f        | `thunar`          |
+| Super+Shift+q   | `xfce4-session-logout`  |
+| Super+Return   | `xfce4-terminal`  |
