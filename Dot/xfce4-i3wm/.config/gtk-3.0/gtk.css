@@ -1,8 +1,16 @@
-xfce4-panel.background,
-#systemload-13 trough {
+xfce4-panel.background {
   opacity: 1;
   border-color: #2b2e37;
   background-color: #2b2e37;
+}
+
+#systemload-13 box {
+  padding-right: 3px;
+}
+
+#systemload-13 trough,
+#xfce4-timer-plugin-10 trough {
+  background-color: #32323a;
 }
 
 wnck-pager:selected {
@@ -43,9 +51,14 @@ wnck-pager:selected {
    margin-left: 10px;
 }
 
-#sn-button {
+#sn-button,
+#xfce4-notification-plugin {
   margin-right: 10px;
   border-bottom-color: #b8bb26;
+}
+
+#xfce4-notification-plugin * {
+  -gtk-icon-transform: scale(0.9);
 }
 
 #namebar-3,
