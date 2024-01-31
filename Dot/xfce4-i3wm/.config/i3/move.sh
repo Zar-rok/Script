@@ -5,6 +5,10 @@
 
 set -euo pipefail
 
-wsNext=$(( $( i3-msg -t get_workspaces | jq '.[] | select(.focused).num' ) + $1))
-i3-msg move container to workspace $wsNext
-i3-msg workspace $wsNext
+if [ "${#}" -eq 1 ]; then
+    wsNext=$(($(i3-msg -t get_workspaces | jq '.[] | select(.focused).num') + $1))
+    if [ -n "${wsNext}" ]; then
+        i3-msg -q move container to workspace "${wsNext}"
+        i3-msg -q workspace "${wsNext}"
+    fi
+fi

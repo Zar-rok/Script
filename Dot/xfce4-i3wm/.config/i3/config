@@ -3,34 +3,34 @@ set $super Mod4
 set $alt Mod1
 
 # set font
-font pango: Hack 16
+font pango: Fira Sans 16
 
 # Use Mouse+$super to drag floating windows to their wanted position
 floating_modifier $super
 
 # start rofi
-bindsym $alt+space exec rofi -show drun -icon-theme "Numix-Circle-Light"
+bindsym $alt+space exec rofi -show drun -theme "launcher.rasi"
 
 # common apps keybinds
 exec --no-startup-id xfce4-panel --disable-wm-check
 exec --no-startup-id nitrogen --restore
-exec --no-startup-id compton --config ~/.config/.compton.conf &
+exec --no-startup-id  DISPLAY=":0" picom -b # compton --config ~/.config/.compton.conf &
 exec --no-startup-id redshift &
-exec --no-startup-id "sleep 7; birdtray"
+# exec --no-startup-id "sleep 7; birdtray"
 
 bindsym $super+w exec firefox; focus
 bindsym $super+f exec thunar; focus
 bindsym $super+e exec emacsclient -c; focus
-bindsym $super+t exec birdtray -t
+bindsym $super+t exec thunderbird; focus
 bindsym $super+Return exec xfce4-terminal --hide-scrollbar
-bindsym $super+Shift+q exec xfce4-session-logout
+bindsym $super+shift+q exec /home/paul/.config/rofi/powermenu.sh
 
 # controls
 bindsym XF86MonBrightnessUp exec xbacklight -inc 1
 bindsym XF86MonBrightnessDown exec xbacklight -dec 1
 bindsym XF86Display exec xfce4-display-settings
 bindsym XF86Tools exec xfce4-settings-manager
-bindsym XF86Search exec catfish --start --large-icons --thumbnails --path=/home/paul
+bindsym XF86Search exec /home/paul/.config/rofi/recoll_search.py --theme-search="recoll_search.rasi" --theme-result="recoll_result.rasi" -o xdg-open
 bindsym XF86LaunchA layout toggle split
 bindsym XF86Explorer exec xfce4-screensaver-command -l
 bindsym $super+Print exec xfce4-screenshooter
@@ -52,48 +52,55 @@ bindsym $super+k focus up
 bindsym $super+l focus right
 
 # move focused window
-bindsym $super+Shift+Left move left
-bindsym $super+Shift+Down move down
-bindsym $super+Shift+Up move up
-bindsym $super+Shift+Right move right
+bindsym $super+shift+Left move left
+bindsym $super+shift+Down move down
+bindsym $super+shift+Up move up
+bindsym $super+shift+Right move right
 
-bindsym $super+Shift+h move left
-bindsym $super+Shift+j move down
-bindsym $super+Shift+k move up
-bindsym $super+Shift+l move right
+bindsym $super+shift+h move left
+bindsym $super+shift+j move down
+bindsym $super+shift+k move up
+bindsym $super+shift+l move right
 
-bindsym $alt+Control+Right workspace next_on_output
-bindsym $alt+Control+Left workspace prev_on_output
+bindsym $alt+control+Right workspace next_on_output
+bindsym $alt+control+Left workspace prev_on_output
 
-bindsym $alt+Control+l workspace next_on_output
-bindsym $alt+Control+h workspace prev_on_output
+bindsym $alt+control+l workspace next_on_output
+bindsym $alt+control+h workspace prev_on_output
 
 # TODO: Script to ensure that workspaces are one after the other, without empty workspace.
 
 bindsym $alt+Right exec ~/.config/i3/move.sh 1
 bindsym $alt+Left exec ~/.config/i3/move.sh -1
-bindsym $alt+Control+Shift+Right exec ~/.config/i3/go_empty.sh
+
+bindsym $alt+l exec ~/.config/i3/move.sh 1
+bindsym $alt+h exec ~/.config/i3/move.sh -1
+
+bindsym $alt+control+shift+Right exec ~/.config/i3/go_empty.sh
+bindsym $alt+shift+Right exec ~/.config/i3/go_empty.sh --move-window
+
+bindsym $alt+control+shift+l exec ~/.config/i3/go_empty.sh
+bindsym $alt+shift+l exec ~/.config/i3/go_empty.sh --move-window
 
 # move focused window monitor
-bindsym $super+Shift+Control+Left move container to output left; focus left
-bindsym $super+Shift+Control+Down move container to output down; focus down
-bindsym $super+Shift+Control+Up move container to output up; focus up
-bindsym $super+Shift+Control+Right move container to output right; focus right
+bindsym $super+shift+control+Left move container to output left; focus left
+bindsym $super+shift+control+Down move container to output down; focus down
+bindsym $super+shift+control+Up move container to output up; focus up
+bindsym $super+shift+control+Right move container to output right; focus right
 
 # enter fullscreen mode for the focused container
 bindsym $super+shift+f fullscreen toggle
 
 # split
 bindsym $super+s split toggle
-
-# change container layout split
-bindsym $super+Control+s layout toggle split
+bindsym $super+shift+s layout toggle stacked split
+bindsym $super+control+s layout toggle split
 
 # toggle tiling / floating
 bindsym $super+space floating toggle
 
 # change focus between tiling / floating windows
-bindsym $super+Shift+space focus mode_toggle
+bindsym $super+shift+space focus mode_toggle
 
 bindsym $super+1 workspace 1
 bindsym $super+2 workspace 2
@@ -103,15 +110,15 @@ bindsym $super+5 workspace 5
 bindsym $super+6 workspace 6
 
 # move focused container to workspace
-bindsym $super+Shift+1 move container to workspace 1
-bindsym $super+Shift+2 move container to workspace 2
-bindsym $super+Shift+3 move container to workspace 3
-bindsym $super+Shift+4 move container to workspace 4
-bindsym $super+Shift+5 move container to workspace 5
-bindsym $super+Shift+6 move container to workspace 6
+bindsym $super+shift+1 move container to workspace 1
+bindsym $super+shift+2 move container to workspace 2
+bindsym $super+shift+3 move container to workspace 3
+bindsym $super+shift+4 move container to workspace 4
+bindsym $super+shift+5 move container to workspace 5
+bindsym $super+shift+6 move container to workspace 6
 
 # restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
-bindsym $super+Shift+r restart
+bindsym $super+shift+r restart
 
 # resize window (you can also use the mouse for that)
 mode "resize" {
@@ -128,6 +135,7 @@ bindsym $super+r mode "resize"
 for_window [class=".*"] border pixel 1.5
 for_window [class="Skype"] floating disable
 for_window [title="File Upload|Attach File(s)|Enter name of file to save to…"] floating enable, resize set 1346 748, move absolute position 10 10
+for_window [title="Write: .* - Thunderbird"] resize grow width 5 px or 5 ppt
 
 hide_edge_borders smart
 
