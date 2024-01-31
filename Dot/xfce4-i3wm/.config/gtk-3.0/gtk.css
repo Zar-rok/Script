@@ -9,7 +9,7 @@ xfce4-panel.background {
 }
 
 #systemload-13 trough,
-#xfce4-timer-plugin-10 trough {
+#xfce4-timer-plugin-5 trough {
   background-color: #32323a;
 }
 
@@ -30,7 +30,7 @@ wnck-pager:selected {
 #clock-button,
 #xfce4-power-manager-plugin,
 #namebar-6 {
-  font: 20px "Noto Sans ExtraBold";
+  font: 20px "Fira Sans Extrabold";
 }
 
 #pulseaudio-button,
@@ -40,6 +40,7 @@ wnck-pager:selected {
 
 #clock-button {
   border-bottom-color: #83a598;
+  /* padding-left: 8px; */
 }
 
 #clock-button,
