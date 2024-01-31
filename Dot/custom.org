@@ -11,7 +11,7 @@
 
 * Terminal
 - Shell: ~Zsh~
-- Theme: [[./zar-light.theme][Zar Light]]
+- Theme: [[./zar-light.theme][Zar Light]], built from [[https://github.com/catppuccin/xfce4-terminal][Catppucin's Latte theme]].
 - Font: ~Iosevka Term Regular~ - 13px
 - Prompt: [[https://github.com/romkatv/powerlevel10k][powerlevel10k]]
 - Plugins:

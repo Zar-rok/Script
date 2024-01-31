@@ -1,0 +1,12 @@
+[Scheme]
+Name=Zar Light
+ColorCursor=#DC8A78
+ColorCursorForeground=#EFF1F5
+ColorCursorUseDefault=TRUE
+ColorForeground=#241F31
+ColorBackground=#FFFFFF
+ColorSelectionBackground=#ACB0BE
+ColorSelection=#4C4F69
+ColorSelectionUseDefault=TRUE
+TabActivityColor=#FE640B
+ColorPalette=#F6F6FA;#D20F39;#307D1F;#DF8E1D;#1E66F5;#EA76CB;#179299;#ACB0BE;#6C6F85;#D20F39;#40A02B;#DF8E1D;#1E66F5;#EA76CB;#179299;#BCC0CC
