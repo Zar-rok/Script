@@ -1,0 +1,21 @@
+#+title: Applications
+
+- exa
+- fdfind
+- fzf
+- gimp
+- htop
+- inkscape
+- meld
+- mupdf
+- neovim
+- pdf arranger
+- pympress
+- redshift
+- ripgrep
+- rlwrap
+- sxiv
+- vlc
+- wine
+- xcas
+- zotero

@@ -1,0 +1,21 @@
+#+title: Custom
+
+* Appearance
+- GTK+: [[https://github.com/horst3180/arc-theme][Arc-Darker]]
+- Icon: [[https://github.com/numixproject/numix-icon-theme-circle][Numix-Circle]]
+- Firefox: [[https://addons.mozilla.org/en-US/firefox/addon/arc-darker-theme/][Arc-Darker]]
+- Font:
+  + Default font: ~Fira Sans Regular~ 11
+  + Default Monospace Font: ~Fira Code Regular~ 11
+  + Hinting: None
+
+* Terminal
+- Shell: ~Zsh~
+- Theme: [[./zar-light.theme][Zar Light]]
+- Font: ~Iosevka Term Regular~ - 13px
+- Prompt: [[https://github.com/romkatv/powerlevel10k][powerlevel10k]]
+- Plugins:
+  + [[https://github.com/zsh-users/zsh-syntax-highlighting][zsh-syntax-highlighting.zsh]]
+  + [[https://github.com/zsh-users/zsh-completions][zsh-completions]]
+  + [[https://github.com/Aloxaf/fzf-tab][fzf-tab.plugin.zsh]]
+  + [[https://github.com/jeffreytse/zsh-vi-mode][zsh-vi-mode.plugin.zsh]]
