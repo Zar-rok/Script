@@ -8,25 +8,21 @@
 ;; General
 
 (package! modus-themes)
-
 (package! keycast)
 
-;; Dev
+(package! org-modern)
+(package! org-web-tools)
 
-(package! ipython-shell-send)
+(package! evil-escape :disable t) ;; https://tecosaur.github.io/emacs-config/config.html#evil
+
+;; Dev
 
 (package! gitconfig-mode
   :recipe (:host github :repo "magit/git-modes"
            :files ("gitconfig-mode.el")))
-(package! gitignore-mode
-  :recipe (:host github :repo "magit/git-modes"
-           :files ("gitignore-mode.el")))
 
 ;; Python
 
-(package! buftra
-  :recipe (:host github :repo "humitos/buftra.el"))
-(package! py-autoflake
-  :recipe (:host github :repo "humitos/py-autoflake.el"))
+(package! ipython-shell-send)
 
 (package! numpydoc)

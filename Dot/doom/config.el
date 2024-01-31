@@ -13,9 +13,10 @@
       org-meetings-path (concat org-notes-path nil)
       org-dailies-path (concat org-notes-path nil)
       biblio-path (concat current-home nil)
+      personal-dictionnary (concat current-home nil)
       plantuml-path (concat current-home nil)
       font-name nil
-      epdfinfo-path nil)
+      epdfinfo-path (concat current-home nil))
 
 ;; General
 
@@ -37,19 +38,25 @@
       select-enable-clipboard t
       kill-do-not-save-duplicates t
       save-interprogram-paste-before-kill t
-      +modeline-height 16)
+      +modeline-height 16
+      +format-with-lsp nil
+      fill-column 80
+      warning-fill-column fill-column)
 
 (setq-default display-line-numbers-type 'relative
-              display-line-numbers-width 3
+              display-line-numbers-width 2
               display-line-numbers-widen t
-              show-paren-delay 0
-              tab-width 4
+              tab-width 2
               x-stretch-cursor t)
 
 (after! persp-mode
   (setq persp-emacsclient-init-frame-behaviour-override "main"))
 
 (add-hook 'org-mode-hook (lambda () (org-next-visible-heading 1)))
+
+(add-hook 'org-mode-hook (lambda () (company-mode -1)))
+(add-hook 'LaTeX-mode-hook (lambda () (company-mode -1)))
+
 (add-hook 'text-mode-hook #'display-line-numbers-mode)
 (add-hook 'prog-mode-hook #'display-line-numbers-mode)
 
@@ -57,18 +64,13 @@
 (global-subword-mode 1)
 
 (use-package! display-fill-column-indicator
+  :defer t
   :hook (prog-mode . display-fill-column-indicator-mode)
   :config
-  (setq fill-column 80)
   (set-face-attribute 'fill-column-indicator nil :background "gray66"))
 
-(use-package! modus-themes
-  :init
-  (modus-themes-load-themes)
-  :config
-  (modus-themes-load-operandi))
-
 (use-package! orderless
+  :defer t
   :custom (completion-styles '(orderless)))
 
 (add-to-list 'auto-mode-alist '("\\.pl\\'" . prolog-mode))
@@ -77,38 +79,26 @@
 ;; Language
 
 (use-package langtool
+  :defer t
   :config
   (setq langtool-http-server-host "localhost"
         langtool-http-server-port 8081))
-
-;; https://github.com/flycheck/flycheck/issues/1762#issuecomment-750458442
-;; (defvar-local zar/flycheck-local-cache nil)
-
-;; (defun zar/flycheck-checker-get (fn checker property)
-;;   (or (alist-get property (alist-get checker zar/flycheck-local-cache))
-;;       (funcall fn checker property)))
-
-;; (advice-add 'flycheck-checker-get :around 'zar/flycheck-checker-get)
-
-;; (add-hook 'lsp-managed-mode-hook
-;;           (lambda ()
-;;             (when (derived-mode-p 'tex-mode)
-;;               (setq zar/flycheck-local-cache '((lsp . ((next-checkers . (tex-chktex)))))))))
 
 (setenv "DICPATH" "/usr/share/hunspell")
 (setenv "DICTIONARY" "en_US,fr-custom,de")
 (after! ispell
   (setq ispell-program-name "hunspell"
-        ispell-personal-dictionary "~/.hunspell_personal"))
+        ispell-personal-dictionary personal-dictionnary))
 
 ;; Eww
 
-;; Has an impact on evil-easymotion?
-(setq shr-width 80
-      shr-max-width 80)
+(after! eww
+  (add-hook 'eww-after-render-hook #'eww-readable))
 
-(add-hook 'eww-after-render-hook #'eww-readable)
-;; (add-hook 'eww-after-render-hook (lambda () (scroll-lock-mode)))
+(after! shr
+  ;; Has an impact on evil-easymotion?
+  (setq shr-width 80
+        shr-max-width 80))
 
 (after! evil-easymotion
   (evilem-make-motion
@@ -118,21 +108,37 @@
 
 ;; Doom
 
-(setq doom-theme 'modus-operandi)
-(setq doom-font (font-spec :family font-name :size 26)
-      doom-big-font (font-spec :family font-name :size 26)
-      doom-variable-pitch-font (font-spec :family font-name :size 26)
-      doom-serif-font (font-spec :family font-name :size 26))
+(setq doom-theme 'modus-operandi
+      doom-font (font-spec :family "Iosevka Term" :size 24)
+      doom-big-font (font-spec :family "Iosevka Term" :size 34)
+      doom-variable-pitch-font (font-spec :family "Fira Sans" :size 24)
+      doom-serif-font (font-spec :family "Libertinus Serif" :size 24))
 
 (after! which-key
   (setq which-key-idle-delay 0.05))
+
+(use-package! modus-themes
+  :defer t
+  :config
+  (setq modus-themes-completions
+        '((matches . (extrabold underline))
+          (selection . (semibold italic)))))
+
+;; Keycast
+
+(use-package! keycast
+  :defer t)
+
+;; Dired
+
+(after! dired
+  (setq fd-dired-program "fdfind"))
 
 ;; Org
 
 (defun zar/org-time-stamp ()
   (interactive)
-  (if (equal "*" (string (preceding-char)))
-      (insert " "))
+  (if (string= "*" (current-word)) (insert " "))
   (org-time-stamp nil))
 
 (defun zar/org-agenda-find-files ()
@@ -143,6 +149,9 @@
 
 (after! org
   (setq org-directory org-notes-path
+        org-hide-emphasis-markers t
+        org-ellipsis "…"
+        org-pretty-entities t
         org-roam-directory org-notes-path
         +org-roam-open-buffer-on-find-file nil
         org-log-done 'time
@@ -163,81 +172,24 @@
 (custom-set-faces
  '(org-headline-done ((t (:strike-through t)))))
 
-                                        ; (defun my/org-ref-open-pdf-at-point ()
-                                        ;   "Open the pdf for bibtex key under point if it exists."
-                                        ;   (interactive)
-                                        ;   (let* ((results (org-ref-get-bibtex-key-and-file))
-                                        ;          (key (car results))
-                                        ;          (pdf-file (funcall org-ref-get-pdf-filename-function key)))
-                                        ;     (if (file-exists-p pdf-file)
-                                        ;         (find-file pdf-file)
-                                        ;       (message "No PDF found for %s" key))))
-
-                                        ; (setq org-ref-open-pdf-function #'my/org-ref-open-pdf-at-point)
-
-                                        ; (use-package org-noter-pdftools
-                                        ;   :after org-noter
-                                        ;   :config
-                                        ;   (with-eval-after-load 'pdf-annot
-                                        ;     (add-hook 'pdf-annot-activate-handler-functions #'org-noter-pdftools-jump-to-note)))
-
-                                        ; (use-package! org-noter
-                                        ;   :after (:any org pdf-view)
-                                        ;   :config
-                                        ;   (setq
-                                        ;    org-noter-hide-other nil
-                                        ;    org-noter-notes-search-path (list org-notes-path)))
-
-                                        ; (use-package! org-ref
-                                        ;   :config
-                                        ;   (setq org-ref-get-pdf-filename-function (lambda (key) (car (bibtex-completion-find-pdf key)))
-                                        ; 	org-ref-default-bibliography (list biblio-path)
-                                        ; 	org-ref-bibliography-notes org-notes-path
-                                        ; 	org-ref-note-title-format "* NOTES %y - %t\n :PROPERTIES:\n  :Custom_ID: %k\n  :NOTER_DOCUMENT: %F\n :ROAM_KEY: cite:%k\n  :AUTHOR: %9a\n  :JOURNAL: %j\n  :YEAR: %y\n  :VOLUME: %v\n  :PAGES: %p\n  :DOI: %D\n  :URL: %U\n :END:\n\n"
-                                        ; 	org-ref-notes-directory org-notes-path
-                                        ; 	org-ref-notes-function #'orb-edit-notes))
-
-                                        ; (after! org-ref
-                                        ;   (setq bibtex-completion-notes-path org-notes-path
-                                        ; 	bibtex-completion-pdf-open-function (lambda (fpath) (start-process "open" "*open*" "open" fpath))
-                                        ; 	bibtex-completion-bibliography biblio-path
-                                        ; 	bibtex-completion-pdf-field "file"
-                                        ; 	bibtex-completion-notes-template-multiple-files
-                                        ; 	(concat "${title}\n"
-                                        ; 		"#+ROAM_KEY: cite:${=key=}\n"
-                                        ; 		"#+ROAM_TAGS: ${keywords}\n"
-                                        ; 		"#+CREATED: %<%Y-%m-%d-%H-%M-%S>\n"
-                                        ; 		"* Notes \n"
-                                        ; 		":PROPERTIES:\n"
-                                        ; 		":NOTER_DOCUMENT: %(orb-process-file-field \"${=key=}\")\n"
-                                        ; 		":END:\n\n")))
-
-                                        ; (use-package! org-roam-bibtex
-                                        ;   :after (org-roam)
-                                        ;   :hook (org-roam-mode . org-roam-bibtex-mode)
-                                        ;   :config
-                                        ;   (setq orb-preformat-keywords '("=key=" "title" "url" "file" "author-or-editor" "keywords"))
-                                        ;   (setq orb-templates
-                                        ; 	'(("r" "ref" plain (function org-roam-capture--get-point)
-                                        ; 	   ""
-                                        ; 	   :file-name "literature/%<%Y-%m-%d-%H-%M-%S>-${slug}"
-                                        ; 	   :head "#+TITLE: ${=key=}: ${title}
-                                        ; #+ROAM_KEY: ${ref}
-                                        ; #+ROAM_TAGS:
-                                        ; Time-stamp: <>
-                                        ; - tags :: ${keywords}
-
-                                        ; * ${title}
-                                        ;   :PROPERTIES:
-                                        ;   :Custom_ID: ${=key=}
-                                        ;   :URL: ${url}
-                                        ;   :AUTHOR: ${author-or-editor}
-                                        ;   :NOTER_DOCUMENT: %(orb-process-file-field \"${=key=}\")
-                                        ;   :NOTER_PAGE:
-                                        ;   :END:
-
-                                        ; "
-                                        ;            :unnarrowed t))))
+(use-package! org-modern
+  :defer t
+  :hook (org-mode . global-org-modern-mode)
+  :config
+  (setq org-modern-label-border 0.3
+        ;; https://github.com/abougouffa/minemacs/blob/d40fb21fbd2db5810a2e08bec10c4813ecae2597/modules/me-org.el
+        org-modern-list '((?+ . "➤") (?- . "–") (?* . "•"))
+        org-modern-todo-faces
+        '(("TODO" . (:inherit org-verbatim :weight semi-bold
+                     :foreground "white" :background "red3"))
+          ("NEXT" . (:inherit org-verbatim :weight semi-bold
+                     :foreground "white" :background "OrangeRed3"))
+          ("STRT" . (:inherit org-verbatim :weight semi-bold
+                     :foreground "white" :background "RoyalBlue"))
+          ("HOLD" . (:inherit org-verbatim :weight semi-bold
+                     :foreground "white" :background "VioletRed"))
+          ("DONE" . (:inherit org-verbatim :weight semi-bold
+                     :foreground "white" :background "ForestGreen")))))
 
 ;; Evil
 
@@ -274,34 +226,74 @@
 
 ;; Latex
 
-(add-hook 'LaTeX-mode-hook 'prettify-symbols-mode)
 (after! reftex
-  (setq reftex-default-bibliography "/home/paul/Documents/thesis-manuscript-gitlab"))
+  (setq reftex-default-bibliography nil))
+
+(defun zar/TeX-after-compilation-finished-functions (file-name)
+  (shell-command (concat
+                  "notify-send \"LatexMK\" \"Compilation finished\!\""
+                  " -u low"
+                  " -t 3000"
+                  " -i /usr/share/icons/hicolor/48x48/apps/emacs28.png"))
+  (shell-command "pkill -HUP mupdf || true"))
 
 (after! tex
-  (setq TeX-engine 'luatex
-        +latex-viewers '(pdf-tools mupdf)))
+  (setq-default TeX-engine 'luatex
+                +latex-viewers '(pdf-tools mupdf))
+  (set-formatter! 'latexindent '("latexindent" "--logfile=/dev/null" "-y=defaultIndent: \"  \"") :modes '(tex-mode))
+  (add-hook 'TeX-after-compilation-finished-functions #'zar/TeX-after-compilation-finished-functions)
+  (add-to-list 'TeX-command-list '("Pdfsizeopt" "pdfsizeopt %(O?pdf) opt_%(O?pdf)" TeX-run-command nil (plain-tex-mode latex-mode doctex-mode ams-tex-mode texinfo-mode) :help "Optimize PDF size")))
 
 ;; Projectile
 
 (after! projectile
   (add-to-list 'projectile-globally-ignored-directories ".direnv"))
 
+(defun zar/projectile-diagnostics-provide-disabler ()
+  (if (string= projectile-project-name nil)
+      (setq lsp-diagnostics-provider :none)))
+
+(add-hook 'projectile-after-switch-project-hook #'zar/projectile-diagnostics-provide-disabler)
+
 ;; Dev
 
 (after! lsp-mode
-  (setq lsp-keep-workspace-alive nil
+  (setq lsp-log-io nil
+        lsp-use-plists t
+        lsp-keep-workspace-alive nil
+        lsp-headerline-breadcrumb-enable t
+        lsp-headerline-breadcrumb-enable-diagnostics nil
+        lsp-headerline-breadcrumb-icons-enable nil
+        lsp-headerline-breadcrumb-segments '(symbols)
         lsp-modeline-diagnostics-mode nil
-        lsp-enable-file-watchers nil))
+        lsp-modeline-diagnostics-enable nil
+        lsp-modeline-code-actions-enable nil
+        lsp-diagnostics-provider :auto
+        lsp-imenu-index-symbol-kinds '(Class Method Function Enum))
+  (add-to-list 'lsp-file-watch-ignored-directories "[/\\\\]\\.ipynb_checkpoints\\'")
+  (add-to-list 'lsp-file-watch-ignored-directories "[/\\\\]\\.ruff_cache\\'"))
 
 (after! lsp-ui
-  (setq lsp-ui-sideline-show-diagnostics t
-        lsp-ui-sideline-delay 0.1))
+  (setq lsp-ui-sideline-enable t
+        lsp-ui-sideline-show-diagnostics t
+        lsp-ui-doc-show-with-mouse nil))
+
+(after! lsp-ruff-lsp
+  (setq lsp-ruff-lsp-ruff-args ["--line-length=80"]))
 
 (after! company
-  (setq company-idle-delay 0.5
-        company-minimum-prefix-length 2)
   (add-hook 'evil-normal-state-entry-hook #'company-abort))
+
+;; Apheleia
+
+(after! apheleia
+  (setq apheleia-formatters-respect-fill-column t)
+  (set-formatter! 'ruff-check-format
+    '("ruff-check-format.sh" filepath
+      (string-join (apheleia-formatters-fill-column "--line-length=")))
+    :modes '(python-mode))
+  (setf (alist-get 'python-mode apheleia-mode-alist)
+        '(ruff-check-format)))
 
 ;; Python
 
@@ -318,17 +310,21 @@
         dap-python-debugger 'debugpy))
 
 (use-package numpydoc
+  :defer t
   :bind (:map python-mode-map
-         ("C-c C-n" . numpydoc-generate)))
+              ("C-c C-n" . numpydoc-generate)))
 
-(set-formatter! 'black "black -q -l 80 -" :modes '(python-mode))
+;; Coq
 
-(setq py-autoflake-options
-      '("--remove-all-unused-imports" "--remove-unused-variables"))
-(add-hook! 'before-save-hook #'py-autoflake-enable-on-save)
+(defun zar/coq-buffer-font ()
+  (interactive)
+  (setq buffer-face-mode-face '(:family "Fira Code"))
+  (buffer-face-mode))
 
-(setq py-isort-options '("-l 80"))
-(add-hook! 'before-save-hook #'py-isort-before-save)
+(after! coq
+  (add-hook 'coq-mode-hook 'zar/coq-buffer-font)
+  (add-hook 'coq-goals-mode-hook 'zar/coq-buffer-font)
+  (add-hook 'coq-response-mode-hook 'zar/coq-buffer-font))
 
 ;; org-protocol
 
@@ -365,7 +361,7 @@ up, down, left, or right."
     (insert (format "(defun zar/move-%s () (interactive) (zar/window-move-dwim \"%s\"))" direction direction))
     (eval-buffer)))
 
-(mapcar #'zar/setup-window-move '("up" "down" "left" "right"))
+(mapc #'zar/setup-window-move '("up" "down" "left" "right"))
 
 (map! :leader
       (:n "<up>" #'zar/move-up
@@ -385,19 +381,17 @@ up, down, left, or right."
       (:prefix "t"
        :n "t" #'modus-themes-toggle))
 
-(map! :after org-mode
-      :map org-mode-map
+(map! :map org-mode-map
+      :leader
       (:prefix "m"
                (:prefix "d"
                 :n "t" #'zar/org-time-stamp)))
 
-(map! :after eww
-      :map eww-mode-map
+(map! :map eww-mode-map
       (:prefix "g"
        :n "<tab>" #'evilem-motion-shr-next-link))
 
-(map! :after pdf-view
-      :map pdf-view-mode-map
+(map! :map pdf-view-mode-map
       :n "<s-wheel-up>" #'image-backward-hscroll
       :n "<s-wheel-down>" #'image-forward-hscroll
       :n "<s-double-wheel-up>" #'image-backward-hscroll
@@ -405,8 +399,18 @@ up, down, left, or right."
       :n "<s-triple-wheel-up>" #'image-backward-hscroll
       :n "<s-triple-wheel-down>" #'image-forward-hscroll)
 
+(after! cdlatex
+  (map! :map cdlatex-mode-map
+        :i "<backtab>" #'cdlatex-tab))
+
 (map! :n "<end>" #'end-of-line)
 (map! :n "<home>" #'beginning-of-line)
 (evil-global-set-key 'insert (kbd "<end>") #'end-of-line)
 (evil-global-set-key 'insert (kbd "<home>") #'beginning-of-line)
 
+(setq mouse-avoidance-banish-position '((frame-or-window . frame)
+                                        (side . left)
+                                        (side-pos . 0)
+                                        (top-or-bottom . top)
+                                        (top-or-bottom-pos . 0)))
+(mouse-avoidance-mode 'banish)
