@@ -28,8 +28,8 @@ wnck-pager:selected {
 }
 
 #clock-button,
-#xfce4-power-manager-plugin,
-#namebar-6 {
+#xfce4-power-manager-plugin box,
+#wintitle-11 box {
   font: 20px "Fira Sans Extrabold";
 }
 
@@ -62,7 +62,7 @@ wnck-pager:selected {
   -gtk-icon-transform: scale(0.9);
 }
 
-#namebar-3,
+#wintitle-11,
 #sn-button {
   color: #bac3cf;
 }
