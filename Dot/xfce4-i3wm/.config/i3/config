@@ -8,29 +8,27 @@ font pango: Fira Sans 16
 # Use Mouse+$super to drag floating windows to their wanted position
 floating_modifier $super
 
-# start rofi
-bindsym $alt+space exec rofi -show drun -theme "launcher.rasi"
-
-# common apps keybinds
 exec --no-startup-id xfce4-panel --disable-wm-check
 exec --no-startup-id nitrogen --restore
-exec --no-startup-id  DISPLAY=":0" picom -b # compton --config ~/.config/.compton.conf &
+exec --no-startup-id  DISPLAY=":0" picom -b
 exec --no-startup-id redshift &
-# exec --no-startup-id "sleep 7; birdtray"
 
+# common apps keybinds
+bindsym $alt+space exec --no-startup-id xfce4-appfinder
+bindsym $super+$alt+space exec --no-startup-id xfce4-terminal --window --initial-title="Country code finder" --working-directory="/home/paul/Ressources" --command="bash -c 'fzf < country.txt | xclip -selection clipboard'" --hide-scrollbar
 bindsym $super+w exec firefox; focus
 bindsym $super+f exec thunar; focus
 bindsym $super+e exec emacsclient -c; focus
 bindsym $super+t exec thunderbird; focus
 bindsym $super+Return exec xfce4-terminal --hide-scrollbar
-bindsym $super+shift+q exec /home/paul/.config/rofi/powermenu.sh
+bindsym $super+shift+q exec xfce4-session-logout
 
 # controls
 bindsym XF86MonBrightnessUp exec xbacklight -inc 1
 bindsym XF86MonBrightnessDown exec xbacklight -dec 1
 bindsym XF86Display exec xfce4-display-settings
 bindsym XF86Tools exec xfce4-settings-manager
-bindsym XF86Search exec /home/paul/.config/rofi/recoll_search.py --theme-search="recoll_search.rasi" --theme-result="recoll_result.rasi" -o xdg-open
+bindsym XF86Search exec catfish
 bindsym XF86LaunchA layout toggle split
 bindsym XF86Explorer exec xfce4-screensaver-command -l
 bindsym $super+Print exec xfce4-screenshooter
@@ -62,6 +60,17 @@ bindsym $super+shift+j move down
 bindsym $super+shift+k move up
 bindsym $super+shift+l move right
 
+# move focused window monitor
+bindsym $super+shift+control+Left move container to output left; focus left
+bindsym $super+shift+control+Down move container to output down; focus down
+bindsym $super+shift+control+Up move container to output up; focus up
+bindsym $super+shift+control+Right move container to output right; focus right
+
+bindsym $super+shift+control+h move container to output left; focus left
+bindsym $super+shift+control+j move container to output down; focus down
+bindsym $super+shift+control+k move container to output up; focus up
+bindsym $super+shift+control+l move container to output right; focus right
+
 bindsym $alt+control+Right workspace next_on_output
 bindsym $alt+control+Left workspace prev_on_output
 
@@ -81,12 +90,6 @@ bindsym $alt+shift+Right exec ~/.config/i3/go_empty.sh --move-window
 
 bindsym $alt+control+shift+l exec ~/.config/i3/go_empty.sh
 bindsym $alt+shift+l exec ~/.config/i3/go_empty.sh --move-window
-
-# move focused window monitor
-bindsym $super+shift+control+Left move container to output left; focus left
-bindsym $super+shift+control+Down move container to output down; focus down
-bindsym $super+shift+control+Up move container to output up; focus up
-bindsym $super+shift+control+Right move container to output right; focus right
 
 # enter fullscreen mode for the focused container
 bindsym $super+shift+f fullscreen toggle
@@ -134,9 +137,12 @@ bindsym $super+r mode "resize"
 # window rules, you can find the window class using xprop
 for_window [class=".*"] border pixel 1.5
 for_window [class="Skype"] floating disable
+for_window [class="(.*join\?action\=join.*|.*zoom.*)"] floating enable
 for_window [title="File Upload|Attach File(s)|Enter name of file to save to…"] floating enable, resize set 1346 748, move absolute position 10 10
+for_window [title=".* - mpv"] floating enable, sticky toggle, move container to output eDP1
 for_window [title="Write: .* - Thunderbird"] resize grow width 5 px or 5 ppt
-
+for_window [title="Application Finder"] floating enable, resize 500 250
+for_window [title="Country code finder"] floating enable
 hide_edge_borders smart
 
 # colour of border, background, text, indicator, and child_border
