@@ -27,7 +27,6 @@ wnck-pager:selected {
   border-bottom-right-radius: 2.75px;
 }
 
-#clock-button,
 #xfce4-power-manager-plugin box,
 #wintitle-11 box {
   font: 20px "Fira Sans Extrabold";
@@ -49,7 +48,7 @@ wnck-pager:selected {
 }
 
 #pulseaudio-button {
-   margin-left: 10px;
+  margin-left: 10px;
 }
 
 #sn-button,

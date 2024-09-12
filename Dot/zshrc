@@ -8,9 +8,12 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
+eval $(dircolors)
+
 ZVM_INIT_MODE=sourcing
 ZVM_READKEY_ENGINE=$ZVM_READKEY_ENGINE_ZLE
 
+setopt autocd
 setopt histignorealldups sharehistory
 
 # Keep 1000 lines of history within the shell and save it to ~/.zsh_history:
@@ -28,8 +31,8 @@ export PATH="${PATH}:/opt/platform-tools"
 export PATH="${PATH}:/opt/gnirehtet-rust-linux64"
 export PATH="${PATH}:/opt/pdfsizeopt"
 export PATH="${PATH}:/opt/verapdf"
+export PATH="${PATH}:/opt/nvim-linux64/bin"
 export PATH="/usr/local/texlive/2022/bin/x86_64-linux:${PATH}"
-export PATH="/home/paul/.pyenv/bin:$PATH"
 export PATH="/opt/emacs-29.1/src/:${PATH}"
 export MANPATH="${MANPATH}:/usr/local/texlive/2022/texmf-dist/doc/man"
 export INFOPATH="${INFOPATH}:/usr/local/texlive/2022/texmf-dist/doc/info"
@@ -39,17 +42,17 @@ alias ls="exa"
 alias l="exa -lag"
 alias 2up="sudo apt update && sudo apt upgrade"
 alias open="xdg-open"
-alias zshrc="nvim ~/.zshrc"
-
-eval "$(pyenv init -)"
-eval "$(pyenv virtualenv-init -)"
+alias zshrc="nvim ~/.zshrc && source ~/.zshrc"
+alias ..="cd .."
+alias ...="cd ../.."
+alias ....="cd ../../.."
 
 # https://unix.stackexchange.com/a/97844
 autoload -U history-search-end
 zle -N history-beginning-search-backward-end history-search-end
 zle -N history-beginning-search-forward-end history-search-end
 
-if [[ -v INSIDE_EMACS ]]
+if [ -n "${INSIDE_EMACS+1}" ]
 then
     bindkey "$terminfo[kcuu1]" history-beginning-search-backward-end
     bindkey "$terminfo[kcud1]" history-beginning-search-forward-end
@@ -65,6 +68,7 @@ source /usr/share/doc/fzf/examples/completion.zsh
 source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 source ~/.fzf-tab/fzf-tab.plugin.zsh
 source ~/.powerlevel10k/powerlevel10k.zsh-theme
+source "$HOME/.cargo/env"
 
 # Customize FZF
 _fzf_compgen_path() {
