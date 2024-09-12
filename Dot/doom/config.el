@@ -15,7 +15,6 @@
       biblio-path (concat current-home nil)
       personal-dictionnary (concat current-home nil)
       plantuml-path (concat current-home nil)
-      font-name nil
       epdfinfo-path (concat current-home nil))
 
 ;; General
@@ -54,14 +53,14 @@
 
 (add-hook 'org-mode-hook (lambda () (org-next-visible-heading 1)))
 
-(add-hook 'org-mode-hook (lambda () (company-mode -1)))
-(add-hook 'LaTeX-mode-hook (lambda () (company-mode -1)))
-
 (add-hook 'text-mode-hook #'display-line-numbers-mode)
 (add-hook 'prog-mode-hook #'display-line-numbers-mode)
 
 (delete-selection-mode 1)
 (global-subword-mode 1)
+
+(modify-syntax-entry ?< "(>" )
+(modify-syntax-entry ?> ")<" )
 
 (use-package! display-fill-column-indicator
   :defer t
@@ -114,9 +113,6 @@
       doom-variable-pitch-font (font-spec :family "Fira Sans" :size 24)
       doom-serif-font (font-spec :family "Libertinus Serif" :size 24))
 
-(after! which-key
-  (setq which-key-idle-delay 0.05))
-
 (use-package! modus-themes
   :defer t
   :config
@@ -151,6 +147,7 @@
   (setq org-directory org-notes-path
         org-hide-emphasis-markers t
         org-ellipsis "…"
+        org-fontify-done-headline t
         org-pretty-entities t
         org-roam-directory org-notes-path
         +org-roam-open-buffer-on-find-file nil
@@ -160,17 +157,11 @@
         org-todo-keywords '((sequence "TODO(t)" "NEXT(n)" "STRT(s)" "HOLD(h)" "|" "DONE(d)"))
         org-agenda-files (zar/org-agenda-find-files)
         org-agenda-show-future-repeats nil
-        org-capture-templates
-        '(("m" "Meeting" entry (file org-meetings-path)
-           "* %t %^g\n"))))
+        org-capture-templates '(("m" "Meeting" entry (file org-meetings-path) "* %t %^g %?"))))
 
 (after! org-roam
   (setq org-roam-directory org-notes-path
         +org-roam-open-buffer-on-find-file nil))
-
-(setq org-fontify-done-headline t)
-(custom-set-faces
- '(org-headline-done ((t (:strike-through t)))))
 
 (use-package! org-modern
   :defer t
@@ -190,6 +181,29 @@
                      :foreground "white" :background "VioletRed"))
           ("DONE" . (:inherit org-verbatim :weight semi-bold
                      :foreground "white" :background "ForestGreen")))))
+
+;; Avy
+
+(defun avy-action-embark (pt)
+  (unwind-protect
+      (save-excursion
+        (goto-char pt)
+        (embark-act))
+    (select-window
+     (cdr (ring-ref avy-ring 0))))
+  t)
+
+(after! avy
+  (setq avy-all-windows t)
+  (setf (alist-get ?o avy-dispatch-alist) 'avy-action-embark))
+
+;; Treemacs
+
+(after! treemacs
+  (setq treemacs-indentation 1
+        treemacs-indent-guide-style 'line
+        treemacs-follow-mode t
+        treemacs-git-commit-diff-mode t))
 
 ;; Evil
 
@@ -250,7 +264,7 @@
   (add-to-list 'projectile-globally-ignored-directories ".direnv"))
 
 (defun zar/projectile-diagnostics-provide-disabler ()
-  (if (string= projectile-project-name nil)
+  (if (string= projectile-project-name "thesis-manuscript-gitlab")
       (setq lsp-diagnostics-provider :none)))
 
 (add-hook 'projectile-after-switch-project-hook #'zar/projectile-diagnostics-provide-disabler)
@@ -281,8 +295,12 @@
 (after! lsp-ruff-lsp
   (setq lsp-ruff-lsp-ruff-args ["--line-length=80"]))
 
-(after! company
-  (add-hook 'evil-normal-state-entry-hook #'company-abort))
+(use-package treesit-auto
+  :custom
+  (treesit-auto-install 'prompt)
+  :config
+  (treesit-auto-add-to-auto-mode-alist 'all)
+  (global-treesit-auto-mode))
 
 ;; Apheleia
 
@@ -308,11 +326,6 @@
 (after! dap-mode
   (setq dap-python-executable "python3"
         dap-python-debugger 'debugpy))
-
-(use-package numpydoc
-  :defer t
-  :bind (:map python-mode-map
-              ("C-c C-n" . numpydoc-generate)))
 
 ;; Coq
 
@@ -346,8 +359,8 @@
 
 (defun zar/window-move-dwim (direction)
   "Move to the window in the given DIRECTION, within Emacs if it exists,
-otherwise within i3wm. Raise an error if the DIRECTION is not equal to either:
-up, down, left, or right."
+  otherwise within i3wm. Raise an error if the DIRECTION is not equal to either:
+  up, down, left, or right."
   (interactive)
   (if (not (member direction '("up" "down" "left" "right")))
       (error "The direction `%s' must be either equal to: `up', `down', `left', or `right'." direction))
@@ -381,15 +394,14 @@ up, down, left, or right."
       (:prefix "t"
        :n "t" #'modus-themes-toggle))
 
+(map! :prefix "g"
+      :n "h" #'evil-avy-goto-char-timer)
+
 (map! :map org-mode-map
       :leader
       (:prefix "m"
                (:prefix "d"
                 :n "t" #'zar/org-time-stamp)))
-
-(map! :map eww-mode-map
-      (:prefix "g"
-       :n "<tab>" #'evilem-motion-shr-next-link))
 
 (map! :map pdf-view-mode-map
       :n "<s-wheel-up>" #'image-backward-hscroll
@@ -399,14 +411,22 @@ up, down, left, or right."
       :n "<s-triple-wheel-up>" #'image-backward-hscroll
       :n "<s-triple-wheel-down>" #'image-forward-hscroll)
 
-(after! cdlatex
-  (map! :map cdlatex-mode-map
-        :i "<backtab>" #'cdlatex-tab))
+(map! :after cdlatex
+      :map cdlatex-mode-map
+      :i "<backtab>" #'cdlatex-tab)
 
-(map! :n "<end>" #'end-of-line)
-(map! :n "<home>" #'beginning-of-line)
-(evil-global-set-key 'insert (kbd "<end>") #'end-of-line)
-(evil-global-set-key 'insert (kbd "<home>") #'beginning-of-line)
+(map! :after corfu
+      :map corfu-map
+      "M-q" #'corfu-quick-complete)
+
+(map! :after numpydoc
+      :map python-mode-map
+      "C-c C-n" #'numpydoc-generate)
+
+;; (map! :n "<end>" #'end-of-line)
+;; (map! :n "<home>" #'beginning-of-line)
+;; (evil-global-set-key 'insert (kbd "<end>") #'end-of-line)
+;; (evil-global-set-key 'insert (kbd "<home>") #'beginning-of-line)
 
 (setq mouse-avoidance-banish-position '((frame-or-window . frame)
                                         (side . left)
@@ -414,3 +434,13 @@ up, down, left, or right."
                                         (top-or-bottom . top)
                                         (top-or-bottom-pos . 0)))
 (mouse-avoidance-mode 'banish)
+
+(defun zar/beamer-overlay-incr (beg end)
+  (interactive (if (use-region-p)
+                   (list (region-beginning) (region-end))
+                 (list nil nil)))
+  (if (and beg end)
+      (let ((delim-end (search-forward ">"))
+            (delim-bend (search-backward "<")))
+        (while (< (point) delim-end)
+          ))))

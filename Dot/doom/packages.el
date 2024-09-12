@@ -9,9 +9,8 @@
 
 (package! modus-themes)
 (package! keycast)
-
 (package! org-modern)
-(package! org-web-tools)
+(package! nov)
 
 (package! evil-escape :disable t) ;; https://tecosaur.github.io/emacs-config/config.html#evil
 
@@ -20,6 +19,7 @@
 (package! gitconfig-mode
   :recipe (:host github :repo "magit/git-modes"
            :files ("gitconfig-mode.el")))
+(package! treesit-auto)
 
 ;; Python
 
