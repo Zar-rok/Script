@@ -15,7 +15,7 @@ exec --no-startup-id redshift &
 
 # common apps keybinds
 bindsym $alt+space exec --no-startup-id xfce4-appfinder
-bindsym $super+$alt+space exec --no-startup-id xfce4-terminal --window --initial-title="Country code finder" --working-directory="/home/paul/Ressources" --command="bash -c 'fzf < country.txt | xclip -selection clipboard'" --hide-scrollbar
+bindsym $super+$alt+space exec --no-startup-id xfce4-terminal --hide-scrollbar --initial-title="Country code finder" --working-directory="/home/paul/Ressources" --command="bash -c 'fzf < country.txt | xclip -selection clipboard'"; focus
 bindsym $super+w exec firefox; focus
 bindsym $super+f exec thunar; focus
 bindsym $super+e exec emacsclient -c; focus

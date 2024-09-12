@@ -18,4 +18,5 @@
 - vlc
 - wine
 - xcas
+- xclip
 - zotero
