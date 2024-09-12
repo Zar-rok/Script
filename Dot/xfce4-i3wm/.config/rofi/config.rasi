@@ -1,7 +1,0 @@
-configuration {
-  font: "Fira Sans Semibold 18";
-  kb-accept-entry: "Control+m,Return,KP_Enter";
-  kb-remove-to-eol: "Control+n";
-  kb-row-up: "Up,Control+k";
-  kb-row-down: "Down,Control+j";
-}
