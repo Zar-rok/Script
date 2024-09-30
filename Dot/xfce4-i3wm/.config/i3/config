@@ -14,14 +14,14 @@ exec --no-startup-id  DISPLAY=":0" picom -b
 exec --no-startup-id redshift &
 
 # common apps keybinds
-bindsym $alt+space exec --no-startup-id xfce4-appfinder
-bindsym $super+$alt+space exec --no-startup-id xfce4-terminal --hide-scrollbar --initial-title="Country code finder" --working-directory="/home/paul/Ressources" --command="bash -c 'fzf < country.txt | xclip -selection clipboard'"; focus
+bindsym $alt+space exec xfce4-appfinder
+bindsym $super+$alt+space exec xfce4-terminal --hide-scrollbar --initial-title="Country code finder" --working-directory=":0" --command="bash -c 'fzf < country.txt | xclip -selection clipboard'"; focus
 bindsym $super+w exec firefox; focus
 bindsym $super+f exec thunar; focus
 bindsym $super+e exec emacsclient -c; focus
 bindsym $super+t exec thunderbird; focus
 bindsym $super+Return exec xfce4-terminal --hide-scrollbar
-bindsym $super+shift+q exec xfce4-session-logout
+bindsym $super+shift+q exec xfce4-session-logout -f
 
 # controls
 bindsym XF86MonBrightnessUp exec xbacklight -inc 1
@@ -141,7 +141,7 @@ for_window [class="(.*join\?action\=join.*|.*zoom.*)"] floating enable
 for_window [title="File Upload|Attach File(s)|Enter name of file to save to…"] floating enable, resize set 1346 748, move absolute position 10 10
 for_window [title=".* - mpv"] floating enable, sticky toggle, move container to output eDP1
 for_window [title="Write: .* - Thunderbird"] resize grow width 5 px or 5 ppt
-for_window [title="Application Finder"] floating enable, resize 500 250
+for_window [title="Application Finder"] floating enable
 for_window [title="Country code finder"] floating enable
 hide_edge_borders smart
 
