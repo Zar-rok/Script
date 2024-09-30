@@ -11,6 +11,7 @@
 (package! keycast)
 (package! org-modern)
 (package! nov)
+(package! olivetti)
 
 (package! evil-escape :disable t) ;; https://tecosaur.github.io/emacs-config/config.html#evil
 

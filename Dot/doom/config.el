@@ -27,6 +27,7 @@
 #+BEGIN_SRC calc
 #+END_SRC"
       org-agenda-skip-deadline-prewarning-if-scheduled 3
+      browse-url-browser-function #'browse-url-firefox
       undo-limit 80000000
       evil-want-fine-undo t
       auto-save-default t
@@ -41,6 +42,8 @@
       +format-with-lsp nil
       fill-column 80
       warning-fill-column fill-column)
+
+(advice-add #'vterm--redraw :around (lambda (fun &rest args) (let ((cursor-type cursor-type)) (apply fun args)))) ;; https://github.com/akermu/emacs-libvterm/issues/313#issuecomment-1183650463
 
 (setq-default display-line-numbers-type 'relative
               display-line-numbers-width 2
@@ -92,7 +95,9 @@
 ;; Eww
 
 (after! eww
-  (add-hook 'eww-after-render-hook #'eww-readable))
+  (add-hook 'eww-after-render-hook #'eww-readable)
+  (add-hook 'eww-after-render-hook #'olivetti-mode)
+  (add-hook 'eww-after-render-hook (apply-partially #'fringe-mode 0)))
 
 (after! shr
   ;; Has an impact on evil-easymotion?
@@ -226,11 +231,6 @@
   (setq +evil-want-o/O-to-continue-comments nil
         evil-move-cursor-back nil
         evil-kill-on-visual-paste nil))
-
-;; PDF
-
-(after! pdf-tools
-  (setq pdf-info-epdfinfo-program epdfinfo-path))
 
 ;; Deft
 
@@ -422,11 +422,6 @@
 (map! :after numpydoc
       :map python-mode-map
       "C-c C-n" #'numpydoc-generate)
-
-;; (map! :n "<end>" #'end-of-line)
-;; (map! :n "<home>" #'beginning-of-line)
-;; (evil-global-set-key 'insert (kbd "<end>") #'end-of-line)
-;; (evil-global-set-key 'insert (kbd "<home>") #'beginning-of-line)
 
 (setq mouse-avoidance-banish-position '((frame-or-window . frame)
                                         (side . left)
