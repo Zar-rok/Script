@@ -415,9 +415,13 @@
       :map cdlatex-mode-map
       :i "<backtab>" #'cdlatex-tab)
 
+(map! :after vertico
+      :map vertico-map
+      :i "C-c" #'vertico-quick-exit)
+
 (map! :after corfu
       :map corfu-map
-      "M-q" #'corfu-quick-complete)
+      :i "C-c" #'corfu-quick-complete)
 
 (map! :after numpydoc
       :map python-mode-map
