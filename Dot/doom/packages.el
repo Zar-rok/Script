@@ -12,6 +12,7 @@
 (package! org-modern)
 (package! nov)
 (package! olivetti)
+(package! jinx)
 
 (package! evil-escape :disable t) ;; https://tecosaur.github.io/emacs-config/config.html#evil
 

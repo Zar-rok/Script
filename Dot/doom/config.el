@@ -13,7 +13,6 @@
       org-meetings-path (concat org-notes-path nil)
       org-dailies-path (concat org-notes-path nil)
       biblio-path (concat current-home nil)
-      personal-dictionnary (concat current-home nil)
       plantuml-path (concat current-home nil)
       epdfinfo-path (concat current-home nil))
 
@@ -80,17 +79,20 @@
 
 ;; Language
 
-(use-package langtool
-  :defer t
-  :config
+(after! langtool
   (setq langtool-http-server-host "localhost"
         langtool-http-server-port 8081))
 
-(setenv "DICPATH" "/usr/share/hunspell")
-(setenv "DICTIONARY" "en_US,fr-custom,de")
-(after! ispell
-  (setq ispell-program-name "hunspell"
-        ispell-personal-dictionary personal-dictionnary))
+(use-package jinx
+  :hook
+  (emacs-startup . global-jinx-mode)
+  :config
+  (setq jinx-languages "en_US fr-custom de"))
+
+(after! vertico-multiform
+  (add-to-list 'vertico-multiform-categories
+               '(jinx grid (vertico-grid-annotate . 20)))
+  (vertico-multiform-mode 1))
 
 ;; Eww
 
@@ -387,8 +389,6 @@
        :n "h" #'zar/move-left
        :n "ù" #'evil-switch-to-windows-last-buffer
        :n "DEL" #'kill-buffer-and-window)
-      (:prefix "v"
-       :desc "Spell check the buffer" :n "v" #'flyspell-buffer)
       (:prefix "o"
        :n "w" #'browse-url-at-point)
       (:prefix "t"
@@ -422,6 +422,13 @@
 (map! :after numpydoc
       :map python-mode-map
       "C-c C-n" #'numpydoc-generate)
+
+(map! :after jinx
+      :map jinx-mode-map
+      :prefix "z"
+      :n "=" #'jinx-correct
+      :n "]" #'jinx-next
+      :n "[" #'jinx-previous)
 
 (setq mouse-avoidance-banish-position '((frame-or-window . frame)
                                         (side . left)
