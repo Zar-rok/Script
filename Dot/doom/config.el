@@ -5,16 +5,7 @@
 
 ;; Local var
 
-(setq user-full-name nil
-      user-mail-address nil
-      current-home (getenv "HOME")
-      default-directory current-home
-      org-notes-path (concat current-home nil)
-      org-meetings-path (concat org-notes-path nil)
-      org-dailies-path (concat org-notes-path nil)
-      biblio-path (concat current-home nil)
-      plantuml-path (concat current-home nil)
-      epdfinfo-path (concat current-home nil))
+;; TODO
 
 ;; General
 
@@ -42,7 +33,7 @@
       fill-column 80
       warning-fill-column fill-column)
 
-(advice-add #'vterm--redraw :around (lambda (fun &rest args) (let ((cursor-type cursor-type)) (apply fun args)))) ;; https://github.com/akermu/emacs-libvterm/issues/313#issuecomment-1183650463
+;; (advice-add #'vterm--redraw :around (lambda (fun &rest args) (let ((cursor-type cursor-type)) (apply fun args)))) ;; https://github.com/akermu/emacs-libvterm/issues/313#issuecomment-1183650463
 
 (setq-default display-line-numbers-type 'relative
               display-line-numbers-width 2
@@ -54,7 +45,6 @@
   (setq persp-emacsclient-init-frame-behaviour-override "main"))
 
 (add-hook 'org-mode-hook (lambda () (org-next-visible-heading 1)))
-
 (add-hook 'text-mode-hook #'display-line-numbers-mode)
 (add-hook 'prog-mode-hook #'display-line-numbers-mode)
 
@@ -88,11 +78,6 @@
   (emacs-startup . global-jinx-mode)
   :config
   (setq jinx-languages "en_US fr-custom de"))
-
-(after! vertico-multiform
-  (add-to-list 'vertico-multiform-categories
-               '(jinx grid (vertico-grid-annotate . 20)))
-  (vertico-multiform-mode 1))
 
 ;; Eww
 
@@ -349,6 +334,24 @@
                :protocol "eww"
                :function mw-start-eww-for-url))
 
+;; Vertico
+
+(after! vertico
+  (setq vertico-buffer-display-action
+        `(display-buffer-in-direction
+          (direction . right)
+          (window-height . 0.3))))
+
+(vertico-multiform-mode)
+
+(after! vertico-multiform
+  (setq vertico-multiform-commands
+        '((consult-imenu buffer)
+          (jinx-correct buffer)))
+  (setq vertico-multiform-categories
+        '((consult-location buffer)
+          (consult-grep buffer))))
+
 ;; Key bindings
 
 (defun zar/window-move-dwim (direction)
@@ -409,11 +412,11 @@
 
 (map! :after vertico
       :map vertico-map
-      :i "C-c" #'vertico-quick-exit)
+      :i "C-q" #'vertico-quick-exit)
 
 (map! :after corfu
       :map corfu-map
-      :i "C-c" #'corfu-quick-complete)
+      :i "C-q" #'corfu-quick-complete)
 
 (map! :after numpydoc
       :map python-mode-map
