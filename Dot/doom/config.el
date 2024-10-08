@@ -204,14 +204,6 @@
   (setq avy-all-windows t)
   (setf (alist-get ?o avy-dispatch-alist) 'avy-action-embark))
 
-;; Treemacs
-
-(after! treemacs
-  (setq treemacs-indentation 1
-        treemacs-indent-guide-style 'line
-        treemacs-follow-mode t
-        treemacs-git-commit-diff-mode t))
-
 ;; Evil
 
 (defadvice evil-inner-word (around underscore-as-word activate)
