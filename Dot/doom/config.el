@@ -230,12 +230,23 @@
                   " -i /usr/share/icons/hicolor/48x48/apps/emacs28.png"))
   (shell-command "pkill -HUP mupdf || true"))
 
+(defun zar/latex_update_pdf_buffer (buffer_name)
+  "Inspired by https://old.reddit.com/r/emacs/comments/9hpa3g/how_to_get_live_preview_of_pdf_output_of_latex/e6ds838/"
+  (let ((buffer (find-buffer-visiting buffer_name)))
+    (if buffer
+        (with-current-buffer
+            (find-buffer-visiting buffer_name)
+          (pdf-view-revert-buffer nil t))
+      (format "[!] Buffer '%s' not found." buffer_name))))
+
 (after! tex
-  (setq-default TeX-engine 'luatex
+  (setq-default TeX-shell "zsh"
+                TeX-engine 'luatex
                 +latex-viewers '(pdf-tools mupdf))
   (set-formatter! 'latexindent '("latexindent" "--logfile=/dev/null" "-y=defaultIndent: \"  \"") :modes '(tex-mode))
   (add-hook 'TeX-after-compilation-finished-functions #'zar/TeX-after-compilation-finished-functions)
-  (add-to-list 'TeX-command-list '("Pdfsizeopt" "pdfsizeopt %(O?pdf) opt_%(O?pdf)" TeX-run-command nil (plain-tex-mode latex-mode doctex-mode ams-tex-mode texinfo-mode) :help "Optimize PDF size")))
+  (add-to-list 'TeX-command-list '("Pdfsizeopt" "pdfsizeopt %(O?pdf) opt_%(O?pdf)" TeX-run-command nil (plain-tex-mode latex-mode) :help "Optimize PDF size"))
+  (add-to-list 'TeX-command-list '("Preview" "latexmk -pvc -pv- -silent -lualatex -e \"\\$pdf_update_method=4; \\$pdf_update_command=\\\"emacsclient -e '(zar/latex_update_pdf_buffer \\\\\\\"%(O?pdf)\\\\\\\")'\\\"\" %t" TeX-run-command nil (plain-tex-mode latex-mode) :help "Continously preview the current file")))
 
 ;; Projectile
 
