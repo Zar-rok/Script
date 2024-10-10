@@ -34,6 +34,8 @@ bindsym XF86Explorer exec xfce4-screensaver-command -l
 bindsym $super+Print exec xfce4-screenshooter
 bindsym $super+twosuperior exec --no-startup-id pactl set-sink-mute @DEFAULT_SINK@ toggle
 
+bindsym $super+Tab scratchpad show
+
 # kill focused window
 bindsym $super+c kill
 bindsym $alt+F4 kill
