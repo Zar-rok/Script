@@ -10,12 +10,10 @@
   + Hinting: None
 
 * Terminal
-- Shell: ~Zsh~
+- Shell: ~Zsh~ → ~fish~ for interactive usages.
 - Theme: [[./zar-light.theme][Zar Light]], built from [[https://github.com/catppuccin/xfce4-terminal][Catppucin's Latte theme]].
 - Font: ~Iosevka Term Regular~ - 13px
-- Prompt: [[https://github.com/romkatv/powerlevel10k][powerlevel10k]]
 - Plugins:
-  + [[https://github.com/zsh-users/zsh-syntax-highlighting][zsh-syntax-highlighting.zsh]]
-  + [[https://github.com/zsh-users/zsh-completions][zsh-completions]]
-  + [[https://github.com/Aloxaf/fzf-tab][fzf-tab.plugin.zsh]]
-  + [[https://github.com/jeffreytse/zsh-vi-mode][zsh-vi-mode.plugin.zsh]]
+  + [[https://github.com/jorgebucaran/fisher][jorgebucaran/fisher]]
+  + [[https://github.com/pymander/vfish][pymander/vfish]]
+  + [[https://github.com/jorgebucaran/autopair.fish][jorgebucaran/autopair.fish]]
