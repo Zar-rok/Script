@@ -13,6 +13,11 @@
 (package! nov)
 (package! olivetti)
 (package! jinx)
+(package! osm)
+(package! qrencode)
+(package! fish-mode)
+(package! topspace)
+(package! evil-matchit)
 
 (package! evil-escape :disable t) ;; https://tecosaur.github.io/emacs-config/config.html#evil
 
@@ -21,7 +26,17 @@
 (package! gitconfig-mode
   :recipe (:host github :repo "magit/git-modes"
            :files ("gitconfig-mode.el")))
+
+(package! screenshot
+  :recipe (:host github :repo "tecosaur/screenshot"
+           :files ("screenshot.el")))
+
+(package! ultra-scroll
+  :recipe (:host github :repo "jdtsmith/ultra-scroll"
+           :files ("ultra-scroll.el")))
+
 (package! treesit-auto)
+(package! envrc)
 
 ;; Python
 

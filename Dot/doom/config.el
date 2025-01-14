@@ -5,7 +5,16 @@
 
 ;; Local var
 
-;; TODO
+(setq user-full-name nil
+      user-mail-address nil
+      current-home (getenv "HOME")
+      default-directory current-home
+      org-notes-path (concat current-home nil)
+      org-meetings-path (concat org-notes-path nil)
+      org-dailies-path (concat org-notes-path nil)
+      biblio-path (concat current-home nil)
+      plantuml-path (concat current-home nil)
+      epdfinfo-path (concat current-home nil))
 
 ;; General
 
@@ -31,7 +40,8 @@
       +modeline-height 16
       +format-with-lsp nil
       fill-column 80
-      warning-fill-column fill-column)
+      warning-fill-column fill-column
+      standard-indent 2)
 
 ;; (advice-add #'vterm--redraw :around (lambda (fun &rest args) (let ((cursor-type cursor-type)) (apply fun args)))) ;; https://github.com/akermu/emacs-libvterm/issues/313#issuecomment-1183650463
 
@@ -51,21 +61,36 @@
 (delete-selection-mode 1)
 (global-subword-mode 1)
 
-(modify-syntax-entry ?< "(>" )
-(modify-syntax-entry ?> ")<" )
-
 (use-package! display-fill-column-indicator
-  :defer t
   :hook (prog-mode . display-fill-column-indicator-mode)
-  :config
-  (set-face-attribute 'fill-column-indicator nil :background "gray66"))
+  :config (set-face-attribute 'fill-column-indicator nil :background "gray66"))
 
-(use-package! orderless
-  :defer t
-  :custom (completion-styles '(orderless)))
-
+(add-to-list 'auto-mode-alist '("\\.fish\\'" . fish-mode))
 (add-to-list 'auto-mode-alist '("\\.pl\\'" . prolog-mode))
-(add-to-list 'default-frame-alist '(inhibit-double-buffering . t))
+(add-to-list 'auto-mode-alist '("\\.eml\\'" . mail-mode))
+
+(defun zar/embark-ediff-files (fileA)
+  (interactive "f")
+  (ediff-files fileA (consult--find "File B to compare: " #'consult--locate-builder (file-name-nondirectory fileA))))
+
+(defun zar/dired-ediff-files ()
+  "https://oremacs.com/2017/03/18/dired-ediff/"
+  (interactive)
+  (let ((files (dired-get-marked-files)))
+    (if (<= (length files) 2)
+        (let* ((fileA (car files))
+               (fileB (if (cdr files)
+                          (cadr files)
+                        (consult--find "File B to compare: " #'consult--locate-builder (file-name-nondirectory fileA)))))
+          (ediff-files fileA fileB))
+      (error "[!] No more than two files should be marked."))))
+
+(use-package ultra-scroll
+  :init
+  (setq scroll-conservatively 101 ; important!
+        scroll-margin 0)
+  :config
+  (ultra-scroll-mode 1))
 
 ;; Language
 
@@ -73,11 +98,10 @@
   (setq langtool-http-server-host "localhost"
         langtool-http-server-port 8081))
 
-(use-package jinx
-  :hook
-  (emacs-startup . global-jinx-mode)
-  :config
-  (setq jinx-languages "en_US fr-custom de"))
+(use-package! jinx
+  :defer t
+  :hook (doom-first-input . global-jinx-mode)
+  :config (setq jinx-languages "en_US fr-custom de"))
 
 ;; Eww
 
@@ -100,13 +124,12 @@
 ;; Doom
 
 (setq doom-theme 'modus-operandi
-      doom-font (font-spec :family "Iosevka Term" :size 24)
-      doom-big-font (font-spec :family "Iosevka Term" :size 34)
-      doom-variable-pitch-font (font-spec :family "Fira Sans" :size 24)
-      doom-serif-font (font-spec :family "Libertinus Serif" :size 24))
+      doom-font (font-spec :family "Iosevka Comfy" :size 24)
+      doom-big-font (font-spec :family "Iosevka Comfy" :size 34)
+      doom-variable-pitch-font (font-spec :family "Iosevka Comfy Duo" :size 24)
+      doom-serif-font (font-spec :family "Iosevka Comfy Motion" :size 24))
 
 (use-package! modus-themes
-  :defer t
   :config
   (setq modus-themes-completions
         '((matches . (extrabold underline))
@@ -114,8 +137,7 @@
 
 ;; Keycast
 
-(use-package! keycast
-  :defer t)
+(use-package! keycast :defer t)
 
 ;; Dired
 
@@ -211,6 +233,11 @@
         evil-move-cursor-back nil
         evil-kill-on-visual-paste nil))
 
+(use-package evil-collection
+  :after evil
+  :custom
+  (evil-collection-calendar-want-org-bindings t))
+
 ;; Deft
 
 (after! deft
@@ -275,7 +302,19 @@
         lsp-diagnostics-provider :auto
         lsp-imenu-index-symbol-kinds '(Class Method Function Enum))
   (add-to-list 'lsp-file-watch-ignored-directories "[/\\\\]\\.ipynb_checkpoints\\'")
-  (add-to-list 'lsp-file-watch-ignored-directories "[/\\\\]\\.ruff_cache\\'"))
+  (add-to-list 'lsp-file-watch-ignored-directories "[/\\\\]\\.ruff_cache\\'")
+  (lsp-register-client
+   (make-lsp-client
+    :new-connection
+    (lsp-stdio-connection (list "swipl"
+                                "-g" "use_module(library(lsp_server))."
+                                "-g" "lsp_server:main"
+                                "-t" "halt"
+                                "--" "stdio"))
+    :major-modes '(prolog-mode)
+    :priority 1
+    :multi-root t
+    :server-id 'prolog-ls)))
 
 (after! lsp-ui
   (setq lsp-ui-sideline-enable t
@@ -285,12 +324,47 @@
 (after! lsp-ruff-lsp
   (setq lsp-ruff-lsp-ruff-args ["--line-length=80"]))
 
-(use-package treesit-auto
-  :custom
-  (treesit-auto-install 'prompt)
+(use-package! treesit-auto
+  :custom (treesit-auto-install 'prompt)
   :config
   (treesit-auto-add-to-auto-mode-alist 'all)
   (global-treesit-auto-mode))
+
+(use-package envrc
+  :hook (doom-first-input . envrc-global-mode))
+
+;; LSP booster
+
+(defun lsp-booster--advice-json-parse (old-fn &rest args)
+  "Try to parse bytecode instead of json."
+  (or
+   (when (equal (following-char) ?#)
+     (let ((bytecode (read (current-buffer))))
+       (when (byte-code-function-p bytecode)
+         (funcall bytecode))))
+   (apply old-fn args)))
+(advice-add (if (progn (require 'json)
+                       (fboundp 'json-parse-buffer))
+                'json-parse-buffer
+              'json-read)
+            :around
+            #'lsp-booster--advice-json-parse)
+
+(defun lsp-booster--advice-final-command (old-fn cmd &optional test?)
+  "Prepend emacs-lsp-booster command to lsp CMD."
+  (let ((orig-result (funcall old-fn cmd test?)))
+    (if (and (not test?)                             ;; for check lsp-server-present?
+             (not (file-remote-p default-directory)) ;; see lsp-resolve-final-command, it would add extra shell wrapper
+             lsp-use-plists
+             (not (functionp 'json-rpc-connection))  ;; native json-rpc
+             (executable-find "emacs-lsp-booster"))
+        (progn
+          (when-let ((command-from-exec-path (executable-find (car orig-result))))  ;; resolve command from exec-path (in case not found in $PATH)
+            (setcar orig-result command-from-exec-path))
+          (message "Using emacs-lsp-booster for %s!" orig-result)
+          (cons "emacs-lsp-booster" orig-result))
+      orig-result)))
+(advice-add 'lsp-resolve-final-command :around #'lsp-booster--advice-final-command)
 
 ;; Apheleia
 
@@ -316,6 +390,9 @@
 (after! dap-mode
   (setq dap-python-executable "python3"
         dap-python-debugger 'debugpy))
+
+(after! doom-modeline
+  (setq doom-modeline-env-python-executable "python3"))
 
 ;; Coq
 
@@ -401,7 +478,23 @@
        :n "t" #'modus-themes-toggle))
 
 (map! :prefix "g"
-      :n "h" #'evil-avy-goto-char-timer)
+      (:prefix "s"
+       :n "l" #'evil-avy-goto-line))
+
+(defun zar/forward-sentence-begin-scroll-top-dwim ()
+  (interactive)
+  (evil-forward-sentence-begin)
+  (if (eq 0 (string-match-p "\\`\\s-*$" (thing-at-point 'line)))
+      (evil-scroll-line-to-top nil)))
+
+(map! :after eww
+      :map eww-mode-map
+      :n ")" #' zar/forward-sentence-begin-scroll-top-dwim)
+
+(map! :after scroll-lock
+      :map scroll-lock-mode-map
+      :n "}" #'scroll-lock-forward-paragraph
+      :n "{" #'scroll-lock-backward-paragraph)
 
 (map! :map org-mode-map
       :leader
@@ -409,13 +502,13 @@
                (:prefix "d"
                 :n "t" #'zar/org-time-stamp)))
 
-(map! :map pdf-view-mode-map
-      :n "<s-wheel-up>" #'image-backward-hscroll
-      :n "<s-wheel-down>" #'image-forward-hscroll
-      :n "<s-double-wheel-up>" #'image-backward-hscroll
-      :n "<s-double-wheel-down>" #'image-forward-hscroll
-      :n "<s-triple-wheel-up>" #'image-backward-hscroll
-      :n "<s-triple-wheel-down>" #'image-forward-hscroll)
+(map! :after shr
+      :map shr-map
+      "v" nil)
+
+(map! :after embark
+      :map embark-file-map
+      "=" #'zar/embark-ediff-files)
 
 (map! :after cdlatex
       :map cdlatex-mode-map
