@@ -35,6 +35,7 @@
       display-line-numbers-widen t
       custom-file null-device
       auto-revert-use-notify t
+      major-mode-remap-alist major-mode-remap-defaults ;; https://github.com/doomemacs/doomemacs/issues/8191#issuecomment-2522039422
       +modeline-height 16)
 
 (setq doom-font (font-spec :family "Iosevka Comfy" :size 24)
@@ -48,8 +49,6 @@
 (add-to-list 'auto-mode-alist '("\\.fish\\'" . fish-mode))
 (add-to-list 'auto-mode-alist '("\\.pl\\'" . prolog-mode))
 (add-to-list 'auto-mode-alist '("\\.eml\\'" . mail-mode))
-(add-to-list 'auto-mode-alist '("\\.[tT]e[xX]\\'" . LaTeX-mode))
-(add-to-list 'auto-mode-alist '("\\.[tT]e[xX]\\'" . LaTeX-mode))
 
 (add-hook 'text-mode-hook #'display-line-numbers-mode)
 (add-hook 'prog-mode-hook #'display-line-numbers-mode)
@@ -184,23 +183,32 @@
         +org-roam-open-buffer-on-find-file nil
         org-log-done 'time
         org-babel-python-command "python3"
-        org-todo-keywords '((sequence "TODO(t)" "NEXT(n)" "STRT(s)" "HOLD(h)" "|" "DONE(d)"))
+        org-deadline-warning-days 3
+        org-log-into-drawer t
         org-agenda-files org-agenda-files-path
         org-agenda-show-future-repeats nil
         org-agenda-skip-deadline-prewarning-if-scheduled 3
-        org-deadline-warning-days 3
-        org-capture-templates '(("m" "Meeting" entry (file org-meetings-path) "* %t %^g %?"))
         org-agenda-skip-timestamp-if-done t
         org-agenda-skip-deadline-if-done t
         org-agenda-skip-scheduled-if-done t
         org-agenda-skip-scheduled-if-deadline-is-shown t
         org-agenda-skip-timestamp-if-deadline-is-shown t
-        org-agenda-span 1
+        org-agenda-span 'day
         org-agenda-start-day "+0d"
-        org-log-into-drawer t
         org-agenda-current-time-string ""
         org-agenda-time-grid '((daily) () "" "")
-        org-agenda-hide-tags-regexp ".*"))
+        org-agenda-hide-tags-regexp "."
+        org-agenda-format-date "<%F %a>"
+        org-agenda-prefix-format '((agenda . "  %?-12t% s ")
+                                   (todo   . "   ")
+                                   (tags   . "   ")
+                                   (search . "   "))
+        org-agenda-custom-commands '(("w" "Weekly agenda"
+                                      ((agenda "" ((org-agenda-span 'week)
+                                                   (org-agenda-start-on-weekday 1))))))
+        org-todo-keywords '((sequence "TODO(t)" "NEXT(n)" "STRT(s)" "HOLD(h)" "|" "DONE(d)")))
+  (add-hook 'org-agenda-mode-hook #'olivetti-mode)
+  (add-hook 'org-agenda-mode-hook (apply-partially #'fringe-mode 0)))
 
 (after! org-roam
   (setq org-roam-directory org-notes-path
@@ -210,8 +218,7 @@
   :hook (org-mode . global-org-modern-mode)
   :config
   (setq org-modern-label-border 0.3
-        ;; https://github.com/abougouffa/minemacs/blob/d40fb21fbd2db5810a2e08bec10c4813ecae2597/modules/me-org.el
-        org-modern-list '((?+ . "•") (?- . "–"))
+        org-modern-list '((?- . "–") (?* . "•") (?+ . "‣"))
         org-modern-todo-faces
         '(("TODO" . (:inherit org-verbatim :weight semi-bold
                      :foreground "white" :background "red3"))
@@ -356,8 +363,27 @@ concatenated."
 (after! tex
   (setq-default TeX-shell "zsh"
                 TeX-engine 'luatex
+                TeX-fold-auto t
                 +latex-viewers '(pdf-tools mupdf))
-  (set-formatter! 'latexindent '("latexindent" "--logfile=/dev/null" "-y=defaultIndent: \"  \"") :modes '(tex-mode))
+  (setopt TeX-fold-macro-spec-list
+          '(("[f]" ("footnote" "marginpar"))
+            (TeX-fold-cite-display ("cite"))
+            ("[l]" ("label"))
+            ("[r]" ("ref" "pageref" "eqref"))
+            ("[i]" ("index" "glossary"))
+            ("> {1}" ("caption"))
+            ("[1]||–" ("item"))
+            (truncate-string-ellipsis ("dots"))
+            ("{1}" ("emph" "textit" "textsl" "textmd" "textrm" "textsf" "texttt"
+                    "textbf" "textsc" "textup"))
+            (TeX-fold-alert-display
+             ("alert"))
+            (TeX-fold-textcolor-display
+             ("textcolor"))
+            ("⁞{1}" ("begin"))
+            ("⁞{1}" ("end"))
+            ("⦅{1}⦆" ("ding"))
+            (1 ("part" "chapter" "section" "subsection" "subsubsection" "paragraph" "subparagraph" "part*" "chapter*" "section*" "subsection*" "subsubsection*" "paragraph*" "subparagraph*" "emph" "textit" "textsl" "textmd" "textrm" "textsf" "texttt" "textbf" "textsc" "textup"))))
   (add-hook 'TeX-after-compilation-finished-functions #'zar/TeX-after-compilation-finished-functions)
   (add-to-list 'TeX-command-list '("Pdfsizeopt" "pdfsizeopt %(O?pdf) opt_%(O?pdf)" TeX-run-command nil (plain-tex-mode latex-mode) :help "Optimize PDF size"))
   (add-to-list 'TeX-command-list '("Preview" "latexmk -pvc -pv- -silent -lualatex -e \"\\$pdf_update_method=4; \\$pdf_update_command=\\\"emacsclient -e '(zar/latex_update_pdf_buffer \\\\\\\"%(O?pdf)\\\\\\\")'\\\"\" %t" TeX-run-command nil (plain-tex-mode latex-mode) :help "Continously preview the current file")))
@@ -447,8 +473,12 @@ concatenated."
                                 "--fix" "--fix-only"
                                 "--stdin-filename" filepath "-")
     :modes '(python-mode))
+  (set-formatter! 'tex-fmt '("tex-fmt" "--nowrap" "--noconfig" "--quiet" "--stdin")
+    :modes '(tex-mode))
   (setf (alist-get 'python-mode apheleia-mode-alist)
-        '(ruff-check ruff)))
+        '(ruff-check ruff))
+  (setf (alist-get 'LaTeX-mode apheleia-mode-alist)
+        '(tex-fmt)))
 
 ;; Python
 
@@ -512,7 +542,7 @@ concatenated."
 
 (defun mw-start-eww-for-url (plist)
   "raise emacs and call eww with the url in plist."
-  (raise-frame)
+  (+workspace/switch-to "eww")
   (eww (plist-get plist :url))
   (doom/window-maximize-buffer)
   nil)
