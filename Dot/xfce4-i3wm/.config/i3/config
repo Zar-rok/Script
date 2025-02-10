@@ -15,13 +15,14 @@ exec --no-startup-id redshift &
 
 # common apps keybinds
 bindsym $alt+space exec xfce4-appfinder
-bindsym $super+$alt+space exec xfce4-terminal --hide-scrollbar --initial-title="Country code finder" --working-directory=":0" --command="bash -c 'fzf < country.txt | xclip -selection clipboard'"; focus
 bindsym $super+w exec firefox; focus
 bindsym $super+f exec thunar; focus
 bindsym $super+e exec emacsclient -c; focus
 bindsym $super+t exec thunderbird; focus
 bindsym $super+Return exec xfce4-terminal --hide-scrollbar
-bindsym $super+shift+q exec xfce4-session-logout -f
+bindsym $super+Shift+q exec xfce4-session-logout -f
+bindsym $super+m exec emacsclient -e "(zar/consult-pdf)"; focus
+bindsym $super+$alt+space exec emacsclient -e "(zar/consult-country-code)"; focus
 
 # controls
 bindsym XF86MonBrightnessUp exec xbacklight -inc 1
@@ -35,6 +36,7 @@ bindsym $super+Print exec xfce4-screenshooter
 bindsym $super+twosuperior exec --no-startup-id pactl set-sink-mute @DEFAULT_SINK@ toggle
 
 bindsym $super+Tab scratchpad show
+bindsym $super+Shift+Tab move scratchpad
 
 # kill focused window
 bindsym $super+c kill
@@ -52,26 +54,26 @@ bindsym $super+k focus up
 bindsym $super+l focus right
 
 # move focused window
-bindsym $super+shift+Left move left
-bindsym $super+shift+Down move down
-bindsym $super+shift+Up move up
-bindsym $super+shift+Right move right
+bindsym $super+Shift+Left move left
+bindsym $super+Shift+Down move down
+bindsym $super+Shift+Up move up
+bindsym $super+Shift+Right move right
 
-bindsym $super+shift+h move left
-bindsym $super+shift+j move down
-bindsym $super+shift+k move up
-bindsym $super+shift+l move right
+bindsym $super+Shift+h move left
+bindsym $super+Shift+j move down
+bindsym $super+Shift+k move up
+bindsym $super+Shift+l move right
 
 # move focused window monitor
-bindsym $super+shift+control+Left move container to output left; focus left
-bindsym $super+shift+control+Down move container to output down; focus down
-bindsym $super+shift+control+Up move container to output up; focus up
-bindsym $super+shift+control+Right move container to output right; focus right
+bindsym $super+Shift+control+Left move container to output left; focus left
+bindsym $super+Shift+control+Down move container to output down; focus down
+bindsym $super+Shift+control+Up move container to output up; focus up
+bindsym $super+Shift+control+Right move container to output right; focus right
 
-bindsym $super+shift+control+h move container to output left; focus left
-bindsym $super+shift+control+j move container to output down; focus down
-bindsym $super+shift+control+k move container to output up; focus up
-bindsym $super+shift+control+l move container to output right; focus right
+bindsym $super+Shift+control+h move container to output left; focus left
+bindsym $super+Shift+control+j move container to output down; focus down
+bindsym $super+Shift+control+k move container to output up; focus up
+bindsym $super+Shift+control+l move container to output right; focus right
 
 bindsym $alt+control+Right workspace next_on_output
 bindsym $alt+control+Left workspace prev_on_output
@@ -87,25 +89,25 @@ bindsym $alt+Left exec ~/.config/i3/move.sh -1
 bindsym $alt+l exec ~/.config/i3/move.sh 1
 bindsym $alt+h exec ~/.config/i3/move.sh -1
 
-bindsym $alt+control+shift+Right exec ~/.config/i3/go_empty.sh
-bindsym $alt+shift+Right exec ~/.config/i3/go_empty.sh --move-window
+bindsym $alt+control+Shift+Right exec ~/.config/i3/go_empty.sh
+bindsym $alt+Shift+Right exec ~/.config/i3/go_empty.sh --move-window
 
-bindsym $alt+control+shift+l exec ~/.config/i3/go_empty.sh
-bindsym $alt+shift+l exec ~/.config/i3/go_empty.sh --move-window
+bindsym $alt+control+Shift+l exec ~/.config/i3/go_empty.sh
+bindsym $alt+Shift+l exec ~/.config/i3/go_empty.sh --move-window
 
 # enter fullscreen mode for the focused container
-bindsym $super+shift+f fullscreen toggle
+bindsym $super+Shift+f fullscreen toggle
 
 # split
 bindsym $super+s split toggle
-bindsym $super+shift+s layout toggle stacked split
+bindsym $super+Shift+s layout toggle stacked split
 bindsym $super+control+s layout toggle split
 
 # toggle tiling / floating
 bindsym $super+space floating toggle
 
 # change focus between tiling / floating windows
-bindsym $super+shift+space focus mode_toggle
+bindsym $super+Shift+space focus mode_toggle
 
 bindsym $super+1 workspace 1
 bindsym $super+2 workspace 2
@@ -115,15 +117,15 @@ bindsym $super+5 workspace 5
 bindsym $super+6 workspace 6
 
 # move focused container to workspace
-bindsym $super+shift+1 move container to workspace 1
-bindsym $super+shift+2 move container to workspace 2
-bindsym $super+shift+3 move container to workspace 3
-bindsym $super+shift+4 move container to workspace 4
-bindsym $super+shift+5 move container to workspace 5
-bindsym $super+shift+6 move container to workspace 6
+bindsym $super+Shift+1 move container to workspace 1
+bindsym $super+Shift+2 move container to workspace 2
+bindsym $super+Shift+3 move container to workspace 3
+bindsym $super+Shift+4 move container to workspace 4
+bindsym $super+Shift+5 move container to workspace 5
+bindsym $super+Shift+6 move container to workspace 6
 
 # restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
-bindsym $super+shift+r restart
+bindsym $super+Shift+r restart
 
 # resize window (you can also use the mouse for that)
 mode "resize" {
@@ -141,10 +143,13 @@ for_window [class=".*"] border pixel 1.5
 for_window [class="Skype"] floating disable
 for_window [class="(.*join\?action\=join.*|.*zoom.*)"] floating enable
 for_window [title="File Upload|Attach File(s)|Enter name of file to save to…"] floating enable, resize set 1346 748, move absolute position 10 10
-for_window [title=".* - mpv"] floating enable, sticky toggle, move container to output eDP1
+for_window [title=".* - mpv"] move scratchpad
 for_window [title="Write: .* - Thunderbird"] resize grow width 5 px or 5 ppt
 for_window [title="Application Finder"] floating enable
-for_window [title="Country code finder"] floating enable
+for_window [title="PDF browser"] floating enable, resize set 1346 748, move position center
+for_window [title="Country code"] floating enable, resize set 750 600, move position center
+for_window [title="xfce4-notifyd"] border none
+
 hide_edge_borders smart
 
 # colour of border, background, text, indicator, and child_border

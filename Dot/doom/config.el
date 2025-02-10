@@ -168,6 +168,30 @@
     (`ascii (format "%s (%s)" description link))
     (_ link)))
 
+(defun zar/org-modern-agenda ()
+  "Finalize Org agenda highlighting."
+  (save-excursion
+    (save-match-data
+      (let ((case-fold-search)
+            (agenda-re-faces '(("^.*-agenda (W[0-9]\\{2\\}):$" . 'org-modern-label)
+                               ("^<[0-9]\\{4\\}-[0-9]\\{2\\}-[0-9]\\{2\\} [[:word:]]+\\.?>$" . 'org-modern-date-active)
+                               ("^[[:space:]]+[ 0-9:-]\\{12\\} " . 'org-modern-block-name)
+                               ("^[[:space:]]+![ 0-9:-]\\{14\\}" . 'org-modern-todo)
+                               ("^[[:space:]]+⧖[ 0-9:-]\\{14\\}" . 'org-modern-tag)
+                               ("^￫[ 0-9]?[0-9]d[[:space:]]\\{13\\}" . 'org-modern-block-name)
+                               ("^￩[ 0-9]?[0-9]d[[:space:]]\\{13\\}" . 'org-modern-priority))))
+        (dolist (entry agenda-re-faces)
+          (let ((entry-re (car entry))
+                (entry-face (cdr entry)))
+            (goto-char (point-min))
+            (while (re-search-forward entry-re nil 'noerror)
+              (let ((beg (match-beginning 0))
+                    (end (match-end 0)))
+                (when (s-contains? "^<" entry-re)
+                  (put-text-property beg (1+ beg) 'display " ")
+                  (put-text-property (1- end) end 'display " "))
+                (put-text-property beg end 'face entry-face)))))))))
+
 (after! org
   (org-link-set-parameters "cbthunderlink"
                            :follow #'zar/org-cbthunderlink-open
@@ -199,7 +223,9 @@
         org-agenda-time-grid '((daily) () "" "")
         org-agenda-hide-tags-regexp "."
         org-agenda-format-date "<%F %a>"
-        org-agenda-prefix-format '((agenda . "  %?-12t% s ")
+        org-agenda-deadline-leaders '("  ! " "￫%2xd" "￩%2xd")
+        org-agenda-scheduled-leaders '("  ⧖ " "")
+        org-agenda-prefix-format '((agenda . "%-4s%-11t    ")
                                    (todo   . "   ")
                                    (tags   . "   ")
                                    (search . "   "))
@@ -207,8 +233,7 @@
                                       ((agenda "" ((org-agenda-span 'week)
                                                    (org-agenda-start-on-weekday 1))))))
         org-todo-keywords '((sequence "TODO(t)" "NEXT(n)" "STRT(s)" "HOLD(h)" "|" "DONE(d)")))
-  (add-hook 'org-agenda-mode-hook #'olivetti-mode)
-  (add-hook 'org-agenda-mode-hook (apply-partially #'fringe-mode 0)))
+  (add-hook 'org-agenda-finalize-hook #'zar/org-modern-agenda))
 
 (after! org-roam
   (setq org-roam-directory org-notes-path
@@ -218,7 +243,6 @@
   :hook (org-mode . global-org-modern-mode)
   :config
   (setq org-modern-label-border 0.3
-        org-modern-list '((?- . "–") (?* . "•") (?+ . "‣"))
         org-modern-todo-faces
         '(("TODO" . (:inherit org-verbatim :weight semi-bold
                      :foreground "white" :background "red3"))
@@ -285,7 +309,7 @@ concatenated."
     (fringe-mode 0)
     (olivetti-mode))
 
-  (setq elfeed-search-filter "@1-week-ago"
+  (setq elfeed-search-filter "@2-week-ago"
         elfeed-search-print-entry-function '+rss/elfeed-search-print-entry
         elfeed-show-entry-switch 'elfeed-olivetti
         elfeed-show-entry-delete #'+rss/delete-pane
@@ -552,16 +576,16 @@ concatenated."
                :protocol "eww"
                :function mw-start-eww-for-url))
 
-(defun zar/consult-pdf-mupdfgl ()
+(defun zar/consult-pdf ()
   (interactive)
-  (let ((frame (make-frame '((name . "MuPDF browser")
+  (let ((frame (make-frame '((name . "PDF browser")
                              (minibuffer . only)))))
     (select-frame frame)
     (unwind-protect
         (call-process "xdg-open" nil 0 nil
-                      (consult--find "MuPDF: "
+                      (consult--find "Open: "
                                      #'consult--locate-builder
-                                     "pdf "))
+                                     "\.pdf "))
       (delete-frame frame))))
 
 (defun zar/consult-country-code ()
