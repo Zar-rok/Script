@@ -9,8 +9,6 @@
 
 (package! modus-themes)
 (package! keycast)
-(package! org-modern)
-(package! org-ql)
 (package! olivetti)
 (package! jinx)
 (package! osm)
@@ -19,10 +17,6 @@
 (package! topspace)
 (package! casual-suite)
 (package! all-the-icons-ibuffer)
-
-(package! ultra-scroll
-  :recipe (:host github :repo "jdtsmith/ultra-scroll"
-           :files ("ultra-scroll.el")))
 
 (package! evil-escape :disable t) ;; https://tecosaur.github.io/emacs-config/config.html#evil
 (package! elfeed-goodies :disable t)
