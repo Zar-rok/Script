@@ -10,38 +10,36 @@
 ;; General
 
 (setq-default standard-indent 2
-              tab-width 2
-              delete-by-moving-to-trash t
-              window-combination-resize t
-              x-stretch-cursor t)
+              tab-width 2)
 
-(setq initial-major-mode #'org-mode
-      initial-scratch-message ""
-      browse-url-browser-function #'browse-url-firefox
-      undo-limit 80000000
-      evil-want-fine-undo t
-      auto-save-default t
-      truncate-string-ellipsis "…"
-      system-time-locale "C"
-      calendar-week-start-day 1
-      select-enable-primary t
-      select-enable-clipboard t
-      kill-do-not-save-duplicates t
-      save-interprogram-paste-before-kill t
-      fill-column 80
-      warning-fill-column fill-column
-      display-line-numbers-type 'relative
-      display-line-numbers-width 2
-      display-line-numbers-widen t
-      custom-file null-device
-      auto-revert-use-notify t
-      major-mode-remap-alist major-mode-remap-defaults ;; https://github.com/doomemacs/doomemacs/issues/8191#issuecomment-2522039422
-      +modeline-height 16)
+(setopt initial-major-mode #'org-mode
+        initial-scratch-message ""
+        browse-url-browser-function #'browse-url-firefox
+        undo-limit 80000000
+        evil-want-fine-undo t
+        auto-save-default t
+        truncate-string-ellipsis "…"
+        system-time-locale "C"
+        calendar-week-start-day 1
+        select-enable-primary t
+        select-enable-clipboard t
+        kill-do-not-save-duplicates t
+        save-interprogram-paste-before-kill t
+        delete-by-moving-to-trash t
+        window-combination-resize t
+        x-stretch-cursor t
+        display-line-numbers-type nil
+        warning-fill-column fill-column
+        custom-file null-device
+        major-mode-remap-alist major-mode-remap-defaults ;; https://github.com/doomemacs/doomemacs/issues/8191#issuecomment-2522039422
+        auto-revert-use-notify t
+        fill-column 80
+        left-fringe-width 15)
 
-(setq doom-font (font-spec :family "Iosevka Comfy" :size 24)
-      doom-big-font (font-spec :family "Iosevka Comfy" :size 34)
-      doom-variable-pitch-font (font-spec :family "Iosevka Comfy Duo" :size 24)
-      doom-serif-font (font-spec :family "Iosevka Comfy Motion" :size 24))
+(setopt doom-font (font-spec :family "Iosevka Comfy" :size 24)
+        doom-big-font (font-spec :family "Iosevka Comfy" :size 34)
+        doom-variable-pitch-font (font-spec :family "Iosevka Comfy Duo" :size 24)
+        doom-serif-font (font-spec :family "Iosevka Comfy Motion" :size 24))
 
 (delete-selection-mode 1)
 (global-subword-mode 1)
@@ -50,23 +48,27 @@
 (add-to-list 'auto-mode-alist '("\\.pl\\'" . prolog-mode))
 (add-to-list 'auto-mode-alist '("\\.eml\\'" . mail-mode))
 
-(add-hook 'text-mode-hook #'display-line-numbers-mode)
-(add-hook 'prog-mode-hook #'display-line-numbers-mode)
-
 ;; UX
 
+(after! doom-modeline
+  ;; https://github.com/doomemacs/doomemacs/issues/1817#issuecomment-534179156
+  (remove-hook 'doom-modeline-mode-hook #'size-indication-mode)
+  (remove-hook 'doom-modeline-mode-hook #'column-number-mode))
+
 (after! persp-mode
-  (setq persp-emacsclient-init-frame-behaviour-override "main"))
+  (setopt persp-emacsclient-init-frame-behaviour-override "main"))
 
-(use-package! display-fill-column-indicator
-  :hook (prog-mode . display-fill-column-indicator-mode)
-  :config (set-face-attribute 'fill-column-indicator nil :background "gray66"))
+(after! display-fill-column-indicator
+  (set-face-attribute 'fill-column-indicator nil :background "gray66")  )
 
-(use-package! ultra-scroll
-  :hook (doom-first-input . ultra-scroll-mode)
-  :config
-  (setq scroll-conservatively 101 ; important!
-        scroll-margin 0))
+;; pdf-tools
+
+(after! pdf-tools
+  (setopt tablist-context-window-display-action
+          '((+popup-display-buffer-stacked-side-window-fn)
+            (side . bottom)
+            (slot . 2)
+            (inhibit-same-window . t))))
 
 ;; Dired
 
@@ -90,19 +92,18 @@
           (ediff-files fileA fileB))
       (error "[!] No more than two files should be marked."))))
 
-(use-package! dired-x
-  :config
-  (setq dired-omit-files (concat dired-omit-files "\\|^\\.\\w.*$")))
+(after! dired-x
+  (setopt dired-omit-files (concat dired-omit-files "\\|^\\.\\w.*$")))
 
 ;; Language
 
 (after! langtool
-  (setq langtool-http-server-host "localhost"
-        langtool-http-server-port 8081))
+  (setopt langtool-http-server-host "localhost"
+          langtool-http-server-port 8081))
 
 (use-package! jinx
   :hook (doom-first-input . global-jinx-mode)
-  :config (setq jinx-languages "en_US fr-custom de"))
+  :custom (jinx-languages "en_US fr-custom de"))
 
 ;; Eww
 
@@ -113,8 +114,8 @@
 
 (after! shr
   ;; Has an impact on evil-easymotion?
-  (setq shr-width 80
-        shr-max-width 80))
+  (setopt shr-width 80
+          shr-max-width 80))
 
 (after! evil-easymotion
   (evilem-make-motion
@@ -126,11 +127,11 @@
 
 (use-package! modus-themes
   :init
-  (setq doom-theme 'modus-operandi)
-  :config
-  (setq modus-themes-completions
-        '((matches . (extrabold underline))
-          (selection . (semibold italic)))))
+  (setopt doom-theme 'modus-operandi)
+  :custom
+  (modus-themes-completions
+   '((matches . (extrabold underline))
+     (selection . (semibold italic)))))
 
 ;; Keycast
 
@@ -140,13 +141,7 @@
 
 (use-package! all-the-icons-ibuffer
   :hook (ibuffer-mode . all-the-icons-ibuffer-mode)
-  :config
-  (setq all-the-icons-ibuffer-icon-size 0.75))
-
-;; Dired
-
-(after! dired
-  (setq fd-dired-program "fdfind"))
+  :custom (all-the-icons-ibuffer-icon-size 0.75))
 
 ;; Org
 
@@ -175,11 +170,15 @@
       (let ((case-fold-search)
             (agenda-re-faces '(("^.*-agenda (W[0-9]\\{2\\}):$" . 'org-modern-label)
                                ("^<[0-9]\\{4\\}-[0-9]\\{2\\}-[0-9]\\{2\\} [[:word:]]+\\.?>$" . 'org-modern-date-active)
-                               ("^[[:space:]]+[ 0-9:-]\\{12\\} " . 'org-modern-block-name)
+                               ("^[[:space:]]\\{17\\}" . 'org-modern-block-name)
+                               ("^[[:space:]]\\{5\\}[0-9:]\\{4\\}[[:space:]]\\{8\\}" . 'org-modern-block-name)
+                               ("^[[:space:]]\\{5\\}[0-9:-]\\{10\\}[[:space:]]\\{2\\}" . 'org-modern-block-name)
+                               ("^[[:space:]]\\{4\\}[0-9:]\\{5\\}[[:space:]]\\{8\\}" . 'org-modern-block-name)
+                               ("^[[:space:]]\\{4\\}[0-9:-]\\{11\\}[[:space:]]\\{2\\}" . 'org-modern-block-name)
                                ("^[[:space:]]+![ 0-9:-]\\{14\\}" . 'org-modern-todo)
                                ("^[[:space:]]+⧖[ 0-9:-]\\{14\\}" . 'org-modern-tag)
-                               ("^￫[ 0-9]?[0-9]d[[:space:]]\\{13\\}" . 'org-modern-block-name)
-                               ("^￩[ 0-9]?[0-9]d[[:space:]]\\{13\\}" . 'org-modern-priority))))
+                               ("^￫[ 0-9]?[0-9]d[[:space:]]\\{12\\}" . 'org-modern-block-name)
+                               ("^￩[ 0-9]?[0-9]d[[:space:]]\\{12\\}" . 'org-modern-priority))))
         (dolist (entry agenda-re-faces)
           (let ((entry-re (car entry))
                 (entry-face (cdr entry)))
@@ -196,64 +195,67 @@
   (org-link-set-parameters "cbthunderlink"
                            :follow #'zar/org-cbthunderlink-open
                            :export #'zar/org-cbthunderlink-export)
-  (setq org-directory org-notes-path
-        org-hide-emphasis-markers t
-        org-ellipsis truncate-string-ellipsis
-        org-fontify-done-headline t
-        org-pretty-entities t
-        org-auto-align-tags nil
-        org-tags-column 0
-        org-roam-directory org-notes-path
-        +org-roam-open-buffer-on-find-file nil
-        org-log-done 'time
-        org-babel-python-command "python3"
-        org-deadline-warning-days 3
-        org-log-into-drawer t
-        org-agenda-files org-agenda-files-path
-        org-agenda-show-future-repeats nil
-        org-agenda-skip-deadline-prewarning-if-scheduled 3
-        org-agenda-skip-timestamp-if-done t
-        org-agenda-skip-deadline-if-done t
-        org-agenda-skip-scheduled-if-done t
-        org-agenda-skip-scheduled-if-deadline-is-shown t
-        org-agenda-skip-timestamp-if-deadline-is-shown t
-        org-agenda-span 'day
-        org-agenda-start-day "+0d"
-        org-agenda-current-time-string ""
-        org-agenda-time-grid '((daily) () "" "")
-        org-agenda-hide-tags-regexp "."
-        org-agenda-format-date "<%F %a>"
-        org-agenda-deadline-leaders '("  ! " "￫%2xd" "￩%2xd")
-        org-agenda-scheduled-leaders '("  ⧖ " "")
-        org-agenda-prefix-format '((agenda . "%-4s%-11t    ")
-                                   (todo   . "   ")
-                                   (tags   . "   ")
-                                   (search . "   "))
-        org-agenda-custom-commands '(("w" "Weekly agenda"
-                                      ((agenda "" ((org-agenda-span 'week)
-                                                   (org-agenda-start-on-weekday 1))))))
-        org-todo-keywords '((sequence "TODO(t)" "NEXT(n)" "STRT(s)" "HOLD(h)" "|" "DONE(d)")))
+  (setopt org-directory org-notes-path
+          org-hide-emphasis-markers t
+          org-ellipsis truncate-string-ellipsis
+          org-fontify-done-headline t
+          org-pretty-entities t
+          org-auto-align-tags nil
+          org-tags-column 0
+          org-roam-directory org-notes-path
+          +org-roam-open-buffer-on-find-file nil
+          org-log-done 'time
+          org-babel-python-command "python3"
+          org-deadline-warning-days 3
+          org-log-into-drawer t
+          org-latex-compiler "lualatex"
+          org-babel-latex-preamble (lambda (_) (concat
+                                                "\\documentclass[tikz, preview]{standalone}\n"
+                                                "\\def\\pgfsysdriver{pgfsys-tex4ht.def}\n"
+                                                "\\usepackage{svg}\n"))
+          org-agenda-files org-agenda-files-path
+          org-agenda-show-future-repeats nil
+          org-agenda-skip-deadline-prewarning-if-scheduled 3
+          org-agenda-skip-timestamp-if-done t
+          org-agenda-skip-deadline-if-done t
+          org-agenda-skip-scheduled-if-done t
+          org-agenda-skip-scheduled-if-deadline-is-shown t
+          org-agenda-skip-timestamp-if-deadline-is-shown t
+          org-agenda-span 'day
+          org-agenda-start-day "+0d"
+          org-agenda-current-time-string ""
+          org-agenda-time-grid '((daily) () "" "")
+          org-agenda-hide-tags-regexp "."
+          org-agenda-format-date "<%F %a>"
+          org-agenda-deadline-leaders '("  ! " "￫%2xd" "￩%2xd")
+          org-agenda-scheduled-leaders '("  ⧖ " "")
+          org-agenda-prefix-format '((agenda . "%-4s%-11t    ")
+                                     (todo   . "   ")
+                                     (tags   . "   ")
+                                     (search . "   "))
+          org-agenda-custom-commands '(("w" "Weekly agenda"
+                                        ((agenda "" ((org-agenda-span 'week)
+                                                     (org-agenda-start-on-weekday 1))))))
+          org-todo-keywords '((sequence "TODO(t)" "NEXT(n)" "STRT(s)" "HOLD(h)" "|" "DONE(d)")))
   (add-hook 'org-agenda-finalize-hook #'zar/org-modern-agenda))
 
 (after! org-roam
-  (setq org-roam-directory org-notes-path
-        +org-roam-open-buffer-on-find-file nil))
+  (setopt org-roam-directory org-notes-path
+          +org-roam-open-buffer-on-find-file nil))
 
-(use-package! org-modern
-  :hook (org-mode . global-org-modern-mode)
-  :config
-  (setq org-modern-label-border 0.3
-        org-modern-todo-faces
-        '(("TODO" . (:inherit org-verbatim :weight semi-bold
-                     :foreground "white" :background "red3"))
-          ("NEXT" . (:inherit org-verbatim :weight semi-bold
-                     :foreground "white" :background "OrangeRed3"))
-          ("STRT" . (:inherit org-verbatim :weight semi-bold
-                     :foreground "white" :background "RoyalBlue"))
-          ("HOLD" . (:inherit org-verbatim :weight semi-bold
-                     :foreground "white" :background "VioletRed"))
-          ("DONE" . (:inherit org-verbatim :weight semi-bold
-                     :foreground "white" :background "ForestGreen")))))
+(after! org-modern
+  (setopt org-modern-label-border 1
+          org-modern-todo-faces
+          '(("TODO" . (:inherit org-verbatim :weight semi-bold
+                       :foreground "white" :background "red3"))
+            ("NEXT" . (:inherit org-verbatim :weight semi-bold
+                       :foreground "white" :background "OrangeRed3"))
+            ("STRT" . (:inherit org-verbatim :weight semi-bold
+                       :foreground "white" :background "RoyalBlue"))
+            ("HOLD" . (:inherit org-verbatim :weight semi-bold
+                       :foreground "white" :background "VioletRed"))
+            ("DONE" . (:inherit org-verbatim :weight semi-bold
+                       :foreground "white" :background "ForestGreen")))))
 
 ;; Elfeed -- Stolen from:
 ;; https://tecosaur.github.io/emacs-config/config.html#newsfeed
@@ -307,13 +309,14 @@ concatenated."
     "https://emacs.stackexchange.com/a/69363"
     (pop-to-buffer buff)
     (fringe-mode 0)
-    (olivetti-mode))
+    (olivetti-mode)
+    (olivetti-set-width 100))
 
-  (setq elfeed-search-filter "@2-week-ago"
-        elfeed-search-print-entry-function '+rss/elfeed-search-print-entry
-        elfeed-show-entry-switch 'elfeed-olivetti
-        elfeed-show-entry-delete #'+rss/delete-pane
-        shr-max-image-proportion 0.6))
+  (setopt elfeed-search-filter "@2-week-ago"
+          elfeed-search-print-entry-function '+rss/elfeed-search-print-entry
+          elfeed-show-entry-switch 'elfeed-olivetti
+          elfeed-show-entry-delete #'+rss/delete-pane
+          shr-max-image-proportion 0.6))
 
 (add-hook! 'elfeed-show-mode-hook (hide-mode-line-mode 1))
 (add-hook! 'elfeed-search-update-hook #'hide-mode-line-mode)
@@ -341,7 +344,7 @@ concatenated."
   t)
 
 (after! avy
-  (setq avy-all-windows t)
+  (setopt avy-all-windows t)
   (setf (alist-get ?e avy-dispatch-alist) 'avy-action-embark))
 
 ;; Evil
@@ -355,16 +358,25 @@ concatenated."
 (after! evil
   (evil-ex-define-cmd "wq" #'zar/save-then-kill-this-buffer)
   (evil-ex-define-cmd "q" #'kill-current-buffer)
-  (setq +evil-want-o/O-to-continue-comments nil
-        evil-want-minibuffer t))
+  (setopt +evil-want-o/O-to-continue-comments nil
+          evil-want-minibuffer t
+          evil-vsplit-window-right t
+          evil-split-window-below t
+          evil-ex-substitute-global t
+          evil-move-cursor-back nil
+          evil-kill-on-visual-paste nil))
+
+(defadvice! prompt-for-buffer (&rest _)
+  :after '(evil-window-split evil-window-vsplit)
+  (consult-buffer))
 
 (after! evil-collection
-  (setq evil-collection-calendar-want-org-bindings t))
+  (setopt evil-collection-calendar-want-org-bindings t))
 
 ;; Deft
 
 (after! deft
-  (setq deft-directory org-notes-path)
+  (setopt deft-directory org-notes-path)
   (set-evil-initial-state! 'deft-mode 'normal))
 
 ;; Latex
@@ -385,29 +397,9 @@ concatenated."
       (format "[!] Buffer '%s' not found." buffer_name))))
 
 (after! tex
-  (setq-default TeX-shell "zsh"
-                TeX-engine 'luatex
-                TeX-fold-auto t
-                +latex-viewers '(pdf-tools mupdf))
-  (setopt TeX-fold-macro-spec-list
-          '(("[f]" ("footnote" "marginpar"))
-            (TeX-fold-cite-display ("cite"))
-            ("[l]" ("label"))
-            ("[r]" ("ref" "pageref" "eqref"))
-            ("[i]" ("index" "glossary"))
-            ("> {1}" ("caption"))
-            ("[1]||–" ("item"))
-            (truncate-string-ellipsis ("dots"))
-            ("{1}" ("emph" "textit" "textsl" "textmd" "textrm" "textsf" "texttt"
-                    "textbf" "textsc" "textup"))
-            (TeX-fold-alert-display
-             ("alert"))
-            (TeX-fold-textcolor-display
-             ("textcolor"))
-            ("⁞{1}" ("begin"))
-            ("⁞{1}" ("end"))
-            ("⦅{1}⦆" ("ding"))
-            (1 ("part" "chapter" "section" "subsection" "subsubsection" "paragraph" "subparagraph" "part*" "chapter*" "section*" "subsection*" "subsubsection*" "paragraph*" "subparagraph*" "emph" "textit" "textsl" "textmd" "textrm" "textsf" "texttt" "textbf" "textsc" "textup"))))
+  (setopt TeX-shell "zsh"
+          TeX-engine 'luatex
+          +latex-viewers '(pdf-tools mupdf))
   (add-hook 'TeX-after-compilation-finished-functions #'zar/TeX-after-compilation-finished-functions)
   (add-to-list 'TeX-command-list '("Pdfsizeopt" "pdfsizeopt %(O?pdf) opt_%(O?pdf)" TeX-run-command nil (plain-tex-mode latex-mode) :help "Optimize PDF size"))
   (add-to-list 'TeX-command-list '("Preview" "latexmk -pvc -pv- -silent -lualatex -e \"\\$pdf_update_method=4; \\$pdf_update_command=\\\"emacsclient -e '(zar/latex_update_pdf_buffer \\\\\\\"%(O?pdf)\\\\\\\")'\\\"\" %t" TeX-run-command nil (plain-tex-mode latex-mode) :help "Continously preview the current file")))
@@ -420,18 +412,20 @@ concatenated."
 ;; Dev
 
 (after! lsp-mode
-  (setq lsp-log-io nil
-        lsp-use-plists t
-        lsp-keep-workspace-alive nil
-        lsp-headerline-breadcrumb-enable t
-        lsp-headerline-breadcrumb-enable-diagnostics nil
-        lsp-headerline-breadcrumb-icons-enable nil
-        lsp-headerline-breadcrumb-segments '(symbols)
-        lsp-modeline-diagnostics-mode nil
-        lsp-modeline-diagnostics-enable nil
-        lsp-modeline-code-actions-enable nil
-        lsp-diagnostics-provider :auto
-        lsp-imenu-index-symbol-kinds '(Class Method Function Enum))
+  (setopt lsp-log-io nil
+          lsp-use-plists t
+          lsp-restart 'ignore
+          lsp-enable-file-watchers nil
+          lsp-keep-workspace-alive nil
+          lsp-headerline-breadcrumb-enable t
+          lsp-headerline-breadcrumb-enable-diagnostics nil
+          lsp-headerline-breadcrumb-icons-enable nil
+          lsp-headerline-breadcrumb-segments '(symbols)
+          lsp-modeline-diagnostics-mode nil
+          lsp-modeline-diagnostics-enable nil
+          lsp-modeline-code-actions-enable nil
+          lsp-diagnostics-provider :auto
+          lsp-imenu-index-symbol-kinds '(Class Method Function Enum))
   (add-to-list 'lsp-file-watch-ignored-directories "[/\\\\]\\.ipynb_checkpoints\\'")
   (add-to-list 'lsp-file-watch-ignored-directories "[/\\\\]\\.ruff_cache\\'")
   (lsp-register-client
@@ -448,9 +442,12 @@ concatenated."
     :server-id 'prolog-ls)))
 
 (after! lsp-ui
-  (setq lsp-ui-sideline-enable t
-        lsp-ui-sideline-show-diagnostics t
-        lsp-ui-doc-show-with-mouse nil))
+  (setopt lsp-ui-sideline-enable t
+          lsp-ui-sideline-show-diagnostics t
+          lsp-ui-doc-show-with-mouse nil))
+
+(after! yasnippet
+  (setopt yas-triggers-in-field t))
 
 (use-package! envrc
   :hook (doom-first-input . envrc-global-mode))
@@ -491,7 +488,7 @@ concatenated."
 ;; Apheleia
 
 (after! apheleia
-  (setq apheleia-formatters-respect-fill-column t)
+  (setopt apheleia-formatters-respect-fill-column t)
   (set-formatter! 'ruff-check '("ruff" "check" "-n" "--select" "I"
                                 "--select" "F401" "--select" "F841"
                                 "--fix" "--fix-only"
@@ -507,39 +504,28 @@ concatenated."
 ;; Python
 
 (after! python
-  (setq python-shell-interpreter "ipython"
-        python-shell-interpreter-args "-i --simple-prompt --InteractiveShell.display_page=True"
-        python-indent-offset 2))
+  (setopt python-shell-interpreter "ipython"
+          python-shell-interpreter-args "-i --simple-prompt --InteractiveShell.display_page=True"))
 
 (after! lsp-pyright
-  (setq lsp-pyright-use-library-code-for-types t
-        lsp-pyright-python-executable-cmd "python3"))
+  (setopt lsp-pyright-python-executable-cmd "python3"))
 
 (after! dap-mode
-  (setq dap-python-executable "python3"
-        dap-python-debugger 'debugpy))
+  (setopt dap-python-executable "python3"
+          dap-python-debugger 'debugpy))
 
 (after! doom-modeline
-  (setq doom-modeline-env-python-executable "python3"))
+  (setopt doom-modeline-env-python-executable "python3"))
 
 ;; Vertico
 
 (after! vertico
-  (setq vertico-buffer-display-action
-        `(display-buffer-in-direction
-          (direction . right)
-          (window-height . 0.3))))
+  (setopt vertico-buffer-display-action
+          `(display-buffer-in-direction
+            (direction . right)
+            (window-height . 0.3))))
 
 (vertico-multiform-mode)
-
-(after! vertico-multiform
-  (setq vertico-multiform-commands
-        '((consult-imenu buffer)
-          (jinx-correct buffer)))
-  (setq vertico-multiform-categories
-        '((consult-location buffer)
-          (consult-grep buffer)
-          (consult-lsp-symbols buffer))))
 
 ;; External
 
@@ -576,6 +562,12 @@ concatenated."
                :protocol "eww"
                :function mw-start-eww-for-url))
 
+(defun zar/update-ade ()
+  (interactive)
+  (call-process "~/Documents/notes/ade.sh" nil 0 nil))
+
+(add-hook 'emacs-startup-hook #'zar/update-ade)
+
 (defun zar/consult-pdf ()
   (interactive)
   (let ((frame (make-frame '((name . "PDF browser")
@@ -584,7 +576,7 @@ concatenated."
     (unwind-protect
         (call-process "xdg-open" nil 0 nil
                       (consult--find "Open: "
-                                     #'consult--locate-builder
+                                     (consult--fd-make-builder '("/home/paul/"))
                                      "\.pdf "))
       (delete-frame frame))))
 
@@ -618,7 +610,8 @@ concatenated."
        :n "ù" #'evil-switch-to-windows-last-buffer
        :n "DEL" #'kill-buffer-and-window)
       (:prefix "o"
-       :n "w" #'browse-url-at-point)
+       :n "w" #'browse-url-at-point
+       :n "u" #'zar/update-ade)
       (:prefix "t"
        :n "t" #'modus-themes-toggle))
 
@@ -647,6 +640,11 @@ concatenated."
       (:prefix "g"
        :n "<" #'org-timestamp-down
        :n ">" #'org-timestamp-up))
+
+(map! :map latex-mode-map
+      :leader
+      (:prefix "o"
+       :n "o" #'TeX-documentation-texdoc))
 
 (map! :after shr
       :map shr-map
@@ -690,9 +688,9 @@ concatenated."
 
 ;; Mouse
 
-(setq mouse-avoidance-banish-position '((frame-or-window . frame)
-                                        (side . left)
-                                        (side-pos . 0)
-                                        (top-or-bottom . top)
-                                        (top-or-bottom-pos . 0)))
+(setopt mouse-avoidance-banish-position '((frame-or-window . frame)
+                                          (side . left)
+                                          (side-pos . 0)
+                                          (top-or-bottom . top)
+                                          (top-or-bottom-pos . 0)))
 (mouse-avoidance-mode 'banish)
