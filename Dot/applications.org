@@ -1,5 +1,6 @@
 #+title: Applications
 
+- [[https://github.com/nwg-piotr/autotiling][autotiling]]
 - exa
 - fdfind
 - fzf
@@ -10,11 +11,13 @@
 - mupdf
 - neovim
 - pdf arranger
+- playerctl
 - pympress
 - redshift
 - ripgrep
 - rlwrap
 - sxiv
+- unclutter
 - vlc
 - wine
 - xcas
