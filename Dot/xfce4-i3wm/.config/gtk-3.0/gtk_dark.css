@@ -1,0 +1,66 @@
+
+.xfce4-panel {
+    border-bottom: 0px;
+}
+
+#systemload-7 box {
+    padding-right: 3px;
+}
+
+#sn-button,
+#clock-button,
+#pulseaudio-button,
+#xfce4-power-manager-plugin,
+#xfce4-notification-plugin {
+    border-bottom: 4px solid;
+    border-bottom-left-radius: 2.75px;
+    border-bottom-right-radius: 2.75px;
+}
+
+.xfce4-panel,
+#systemload-7 trough,
+#xfce4-timer-plugin-5 trough {
+    background-color: #000;
+}
+
+wnck-pager {
+    background-color: #000;
+}
+wnck-pager:selected {
+    background-color: #2f3849;
+}
+
+#windowck-plugin-9,
+#clock-button {
+    color: #fff;
+}
+
+#pulseaudio-button,
+#xfce4-power-manager-plugin {
+    border-bottom-color: #f3d000;
+}
+
+#clock-button {
+    border-bottom-color: #bfc9ff;
+}
+
+#sn-button,
+#xfce4-notification-plugin {
+    margin-right: 10px;
+    border-bottom-color: #8adf80;
+}
+
+#clock-button,
+#xfce4-power-manager-plugin {
+    margin: 0 10px;
+}
+
+#pulseaudio-button {
+    margin-left: 10px;
+}
+
+/* Logout */
+
+.xfsm-logout-dialog {
+    -gtk-icon-theme: "Numix-Circle-Light";
+}

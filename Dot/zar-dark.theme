@@ -1,0 +1,13 @@
+[Scheme]
+ColorCursor=#DC8A78
+ColorCursorForeground=#ACB0BE
+ColorForeground=#FFFFFF
+ColorBackground=#000000
+ColorSelectionBackground=#EFF1F5
+ColorSelection=#4C4F69
+TabActivityColor=#FE640B
+ColorPalette=#000000;#FF5F59;#44BC44;#D0BC00;#2FAFFF;#FEACD0;#00D3D0;#989898;#969696;#FF6B55;#70B900;#FEC43F;#79A8FF;#F78FE7;#4AE2F0;#959595
+ColorCursorUseDefault=TRUE
+ColorSelectionUseDefault=TRUE
+ColorBoldIsBright=FALSE
+Name=Zar Dark
