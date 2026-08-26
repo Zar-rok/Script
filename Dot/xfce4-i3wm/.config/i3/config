@@ -8,10 +8,12 @@ font pango: Fira Sans 16
 # Use Mouse+$super to drag floating windows to their wanted position
 floating_modifier $super
 
-exec --no-startup-id xfce4-panel --disable-wm-check
-exec --no-startup-id nitrogen --restore
-exec --no-startup-id  DISPLAY=":0" picom -b
-exec --no-startup-id redshift &
+exec_always --no-startup-id xfce4-panel --disable-wm-check
+exec_always --no-startup-id nitrogen --restore
+exec_always --no-startup-id DISPLAY=":0" picom -b
+exec_always --no-startup-id redshift &
+exec_always --no-startup-id unclutter &
+exec_always --no-startup-id autotiling --limit 2
 
 # common apps keybinds
 bindsym $alt+space exec xfce4-appfinder
@@ -19,10 +21,8 @@ bindsym $super+w exec firefox; focus
 bindsym $super+f exec thunar; focus
 bindsym $super+e exec emacsclient -c; focus
 bindsym $super+t exec thunderbird; focus
-bindsym $super+Return exec xfce4-terminal --hide-scrollbar
+bindsym $super+Return exec xfce4-terminal --hide-scrollbar --hide-menubar
 bindsym $super+Shift+q exec xfce4-session-logout -f
-bindsym $super+m exec emacsclient -e "(zar/consult-pdf)"; focus
-bindsym $super+$alt+space exec emacsclient -e "(zar/consult-country-code)"; focus
 
 # controls
 bindsym XF86MonBrightnessUp exec xbacklight -inc 1
@@ -32,15 +32,15 @@ bindsym XF86Tools exec xfce4-settings-manager
 bindsym XF86Search exec catfish
 bindsym XF86LaunchA layout toggle split
 bindsym XF86Explorer exec xfce4-screensaver-command -l
+bindsym F12 exec xfce4-screensaver-command -l
 bindsym $super+Print exec xfce4-screenshooter
-bindsym $super+twosuperior exec --no-startup-id pactl set-sink-mute @DEFAULT_SINK@ toggle
+bindsym $super+twosuperior exec --no-startup-id playerctl -a play-pause
 
 bindsym $super+Tab scratchpad show
 bindsym $super+Shift+Tab move scratchpad
 
 # kill focused window
 bindsym $super+c kill
-bindsym $alt+F4 kill
 
 # change focus
 bindsym $super+Left focus left
@@ -139,23 +139,17 @@ mode "resize" {
 bindsym $super+r mode "resize"
 
 # window rules, you can find the window class using xprop
-for_window [class=".*"] border pixel 1.5
+for_window [class=".*"] border pixel 0
 for_window [class="Skype"] floating disable
 for_window [class="(.*join\?action\=join.*|.*zoom.*)"] floating enable
 for_window [title="File Upload|Attach File(s)|Enter name of file to save to…"] floating enable, resize set 1346 748, move absolute position 10 10
 for_window [title=".* - mpv"] move scratchpad
 for_window [title="Write: .* - Thunderbird"] resize grow width 5 px or 5 ppt
 for_window [title="Application Finder"] floating enable
-for_window [title="PDF browser"] floating enable, resize set 1346 748, move position center
-for_window [title="Country code"] floating enable, resize set 750 600, move position center
 for_window [title="xfce4-notifyd"] border none
 
 hide_edge_borders smart
 
 # colour of border, background, text, indicator, and child_border
-client.focused              #bf616a #2f343f #d8dee8 #268bd2 #eee8d5
-client.focused_inactive     #262626 #262626 #d8dee8 #2f343f #262626
-client.unfocused            #262626 #262626 #d8dee8 #2f343f #262626
-client.urgent               #262626 #262626 #d8dee8 #2f343f #262626
-client.placeholder          #262626 #262626 #d8dee8 #2f343f #262626
-client.background           #262626
+client.focused              #d8dee8 #d8dee8 #d8dee8 #bfc9ff #d8dee8
+client.unfocused            #d8dee8 #d8dee8 #d8dee8 #bfc9ff #d8dee8
