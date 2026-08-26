@@ -10,8 +10,6 @@
 
 ![xfce4-panel items](xfce4-panel-items.png)
 
-The only non default item is [xfce4-wintitle-plugin](https://github.com/AdamYuan/xfce4-wintitle-plugin)
-
 The clock is displayed with the `%F %a %R` format + font `Fira Sans ExtraBold` size `10`.
 
 The style of the panel is defined in the [gtk.css](.config/gtk-3.0/gtk.css) file.
